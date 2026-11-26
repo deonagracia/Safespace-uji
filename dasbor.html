@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SafeSpace · Dasbor peneliti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+:root{color-scheme:light;
+--bg:#F2F4EC;--bg2:#E6EBE0;--card:#FBFBF6;--ink:#2A2522;--body:#4A4440;--muted:#6B645E;--line:#D9D6CC;
+--maroon:#8E1F14;--maroon2:#A3392C;--teal:#3F7373;--tealsoft:#D6E4E1;--warn:#FFF3D6;--warnink:#6B4510;--ok:#2F6B4F}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+.linkbtn{font:inherit;font-size:14px;background:none;border:0;color:var(--teal);text-decoration:underline;font-weight:500;min-height:44px;padding:6px;cursor:pointer}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--body);font:16px/1.55 'DM Sans',Arial,sans-serif;overflow-x:clip}
+h1,h2{font-family:'DM Serif Display',Georgia,serif;font-weight:400;color:var(--maroon);line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(30px,7vw,44px)}h2{font-size:clamp(24px,5vw,30px)}
+h3{font-size:18px;color:var(--ink);margin:0}
+p{margin:0}a{color:var(--teal)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.muted{color:var(--muted);font-size:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-block;align-self:flex-start;background:var(--teal);color:#F7FAF8;font-weight:700;font-size:13px;padding:3px 12px;border-radius:999px}
+button,.btn{font:inherit;font-weight:700;min-height:48px;padding:10px 20px;border-radius:14px;border:2px solid var(--maroon);background:var(--maroon);color:#FBF3EF;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button.ghost,.btn.ghost{background:transparent;color:var(--maroon)}
+button.teal{background:var(--teal);border-color:var(--teal);color:#F7FAF8}
+button.small{min-height:38px;padding:6px 14px;font-size:14px;border-radius:10px}
+button.block{width:100%}
+button:disabled{opacity:.4;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+label{display:flex;flex-direction:column;gap:6px;font-weight:500;color:var(--ink)}
+select,input[type=text],input[type=password],input[type=url],textarea{font:inherit;font-size:16px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink);min-height:48px;width:100%}
+textarea{min-height:96px;resize:vertical}
+.check{flex-direction:row;align-items:flex-start;gap:12px;font-weight:400;cursor:pointer}
+.check input{width:24px;height:24px;margin-top:1px;flex:none;accent-color:var(--teal)}
+.note{border-left:4px solid var(--maroon);padding:10px 14px;background:var(--card);border-radius:0 12px 12px 0}
+.warn{background:var(--warn);color:var(--warnink);border-radius:12px;padding:12px 16px;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:15px;font-weight:500;min-height:44px;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.chip.sel{background:var(--teal);border-color:var(--teal);color:#F7FAF8}
+.sheet-bg{position:fixed;inset:0;background:rgba(20,18,16,.5);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:520px;max-height:86dvh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 20px 24px;display:flex;flex-direction:column;gap:12px;animation:up .22s ease-out}
+@media(min-width:700px){.sheet-bg{align-items:center}.sheet{border-radius:22px}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.grip{width:44px;height:5px;border-radius:3px;background:var(--line);align-self:center}
+.kartu table{width:100%;border-collapse:collapse;font-size:14px}
+.kartu td{padding:7px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.kartu td:first-child{color:var(--muted);width:28px}
+.kartu td:last-child{font-weight:700;color:var(--ink);text-align:right}
+/* prototipe SafeSpace */
+.phone{width:390px;height:min(800px,calc(100dvh - 150px));min-height:560px;border:10px solid #2A2522;border-radius:46px;background:#FBFBF6;color:#2A2522;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.phone.full{width:100%;height:100%;min-height:0;border:0;border-radius:0}
+.screen{flex:1;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch}
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px 10px;font-size:15px;font-weight:700;color:#2A2522;background:#F2F4EC;flex:none}
+.sbar .logo{font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:20px;color:#8E1F14}
+.sos{font:inherit;font-size:13px;font-weight:700;border:1.5px solid #8E1F14;color:#8E1F14;border-radius:999px;padding:4px 12px;background:transparent;min-height:34px}
+.pad{padding:16px 18px 24px;display:flex;flex-direction:column;gap:12px}
+.phone h4{font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:28px;color:#8E1F14;margin:0;line-height:1.15}
+.stem{font-size:14px;color:#6B645E}
+.sec{font-size:13px;font-weight:700;color:#3F7373;margin-top:6px}
+.item{background:#F2F4EC;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.item .qt{font-weight:500;color:#2A2522}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.opt{font:inherit;font-size:14px;font-weight:500;min-height:46px;padding:8px;border-radius:10px;border:1.5px solid #3F7373;background:#FBFBF6;color:#3F7373;text-align:center;line-height:1.2;cursor:pointer}
+.opt.sel{background:#3F7373;color:#F7FAF8}
+.optv{font-size:16px;text-align:left;padding:12px 16px;min-height:56px}
+.stick{position:sticky;top:0;z-index:2;background:#FBFBF6;padding:10px 18px;border-bottom:1px solid #D9D6CC;display:flex;flex-direction:column;gap:6px}
+.stick .row{justify-content:space-between;flex-wrap:nowrap}
+.back{font:inherit;font-size:15px;font-weight:700;border:0;background:none;color:#3F7373;padding:4px 0;min-height:36px;cursor:pointer}
+.prog{height:8px;background:#D9D6CC;border-radius:4px;overflow:hidden}.prog i{display:block;height:100%;background:#8E1F14;border-radius:4px;transition:width .25s}
+.pbtn{font:inherit;font-weight:700;min-height:52px;border-radius:14px;border:0;background:#8E1F14;color:#FBF3EF;width:100%;cursor:pointer}
+.pbtn.alt{background:transparent;border:2px solid #3F7373;color:#3F7373}
+.bnav{display:flex;justify-content:space-around;border-top:1px solid #D9D6CC;padding:8px 0 calc(10px + env(safe-area-inset-bottom));font-size:12px;color:#6B645E;background:#FBFBF6;flex:none}
+.bnav b{color:#8E1F14}
+.lvl{border-radius:14px;padding:12px;background:#F2F4EC;display:flex;flex-direction:column;gap:2px}
+.lvl strong{font-size:22px;color:#8E1F14;font-family:'DM Serif Display',Georgia,serif;font-weight:400}
+.qcard{font-size:21px;font-weight:700;color:#2A2522;line-height:1.3}
+.toast{position:absolute;left:12px;right:12px;bottom:76px;background:#2A2522;color:#F7FAF8;padding:10px 14px;border-radius:12px;font-size:14px;z-index:5}
+@media(prefers-reduced-motion:reduce){.prog i{transition:none}.sheet{animation:none}}
+
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:12px max(3vw,14px) 0;display:flex;flex-direction:column;gap:10px}
+.brandrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-family:'DM Serif Display',Georgia,serif;font-size:24px;color:var(--maroon);margin-right:auto}
+.brand small{font-family:'DM Sans',Arial,sans-serif;font-size:14px;color:var(--muted);margin-left:6px}
+.status{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted)}.dot.on{background:var(--ok)}.dot.pv{background:#B7791F}.dot.err{background:var(--maroon)}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tabs a{flex:none;padding:10px 14px;text-decoration:none;color:var(--muted);font-weight:500;border-bottom:3px solid transparent}
+.tabs a.on{color:var(--ink);border-bottom-color:var(--maroon)}
+.main{max-width:1180px;margin:0 auto;padding:clamp(18px,3vw,34px) max(3vw,14px) 80px;display:flex;flex-direction:column;gap:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.big{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(40px,7vw,64px);color:var(--maroon);line-height:1}
+.big small{font-size:.42em;color:var(--muted)}
+.v{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(26px,4vw,36px);color:var(--maroon);line-height:1.05;white-space:nowrap}
+.meter{height:14px;border-radius:7px;background:var(--line);overflow:hidden;display:flex}
+.meter i{display:block;height:100%}
+.split{display:flex;justify-content:space-between;font-size:14px;color:var(--muted)}
+table.t{width:100%;border-collapse:collapse;font-size:15px}
+table.t th{text-align:left;background:var(--tealsoft);color:var(--ink);padding:9px 10px;font-weight:700;white-space:nowrap}
+table.t td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.yes{color:var(--maroon);font-weight:700}
+.scroll{overflow-x:auto}
+.report{font-size:17px;color:var(--ink)}
+.fig{position:relative;min-height:320px}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.feed{display:flex;flex-direction:column}
+.feed div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.copy{display:flex;gap:8px}.copy input{flex:1}
+.desk{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:22px;align-items:start}
+.timer{font-family:'DM Serif Display',Georgia,serif;font-size:40px;color:var(--maroon);line-height:1}
+.login{max-width:520px;margin:6vh auto 0;display:flex;flex-direction:column;gap:16px}
+.seg{display:inline-flex;border:1.5px solid var(--maroon);border-radius:12px;overflow:hidden}
+.seg button{border:0;border-radius:0;min-height:42px;background:transparent;color:var(--maroon)}
+.seg button.on{background:var(--maroon);color:#FBF3EF}
+@media(max-width:1000px){.desk{grid-template-columns:1fr}.desk #ph{justify-self:center}}
+@media(max-width:520px){.desk .phone{width:100%}}
+@media(max-width:640px){table.t{font-size:13px}table.t.stack thead{display:none}table.t.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}table.t.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8.5em;text-align:start}table.t.stack td::before{content:attr(data-l);float:inline-start;width:8em;margin-inline-start:-8.5em;font-weight:700;color:var(--muted)}table.t.stack td:empty{display:none}}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== PENGATURAN: URL Web App Google Apps Script (boleh publik; data tetap butuh kunci) ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwP4-KKvX2RaMc2q2IIzmP6SLTHt8AUUQJk51RmkwFOr3NyvhafNCzsHE4lKq8HTXct7A/exec";
+</script>
+<script>
+const S = (() => {
+  const sum = a => a.reduce((s, v) => s + v, 0);
+  const mean = a => a.length ? sum(a) / a.length : NaN;
+  const sd = a => { if (a.length < 2) return NaN; const m = mean(a); return Math.sqrt(sum(a.map(v => (v - m) ** 2)) / (a.length - 1)); };
+  const median = a => { if (!a.length) return NaN; const s = [...a].sort((x, y) => x - y), h = s.length >> 1; return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2; };
+  function erfc(x) {
+    const z = Math.abs(x), t = 1 / (1 + 0.5 * z);
+    const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+    return x >= 0 ? r : 2 - r;
+  }
+  const pnorm = z => 0.5 * erfc(-z / Math.SQRT2);
+  function qnorm(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const pl = 0.02425;
+    if (p < pl) { const q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+    if (p > 1 - pl) return -qnorm(1 - p);
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  function lgamma(x) {
+    const g = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+    let y = x, t = x + 5.5; t -= (x + 0.5) * Math.log(t); let s = 1.000000000190015;
+    for (const c of g) s += c / ++y;
+    return -t + Math.log(2.5066282746310005 * s / x);
+  }
+  function betacf(a, b, x) {
+    let qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap;
+    if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d; let h = d;
+    for (let m = 1; m <= 300; m++) {
+      const m2 = 2 * m; let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+      d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d; h *= d * c;
+      aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+      d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d;
+      const del = d * c; h *= del; if (Math.abs(del - 1) < 3e-14) break;
+    }
+    return h;
+  }
+  function ibeta(x, a, b) {
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+    return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b;
+  }
+  const pt2 = (t, df) => ibeta(df / (df + t * t), df / 2, 0.5);
+  function rank(a) {
+    const idx = a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]), r = new Array(a.length); let ties = 0;
+    for (let i = 0; i < idx.length;) {
+      let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+      const t = j - i + 1; ties += t ** 3 - t;
+      for (let k = i; k <= j; k++) r[idx[k][1]] = (i + j) / 2 + 1;
+      i = j + 1;
+    }
+    return { r, ties };
+  }
+  function shapiro(x) {
+    const n = x.length; if (n < 3) return null;
+    const xs = [...x].sort((p, q) => p - q), m0 = mean(xs), ss = sum(xs.map(v => (v - m0) ** 2));
+    if (ss === 0) return null;
+    let a;
+    if (n === 3) a = [-Math.SQRT1_2, 0, Math.SQRT1_2];
+    else {
+      const m = Array.from({ length: n }, (_, i) => qnorm((i + 1 - 0.375) / (n + 0.25)));
+      const mm = sum(m.map(v => v * v)), u = 1 / Math.sqrt(n);
+      const poly = (c, v) => c.reduce((s, k, i) => s + k * v ** i, 0);
+      const an = m[n - 1] / Math.sqrt(mm) + poly([0, 0.221157, -0.147981, -2.07119, 4.434685, -2.706056], u);
+      a = new Array(n);
+      if (n > 5) {
+        const an1 = m[n - 2] / Math.sqrt(mm) + poly([0, 0.042981, -0.293762, -1.752461, 5.682633, -3.582633], u);
+        const phi = (mm - 2 * m[n - 1] ** 2 - 2 * m[n - 2] ** 2) / (1 - 2 * an ** 2 - 2 * an1 ** 2);
+        for (let i = 2; i < n - 2; i++) a[i] = m[i] / Math.sqrt(phi);
+        a[0] = -an; a[1] = -an1; a[n - 1] = an; a[n - 2] = an1;
+      } else {
+        const phi = (mm - 2 * m[n - 1] ** 2) / (1 - 2 * an ** 2);
+        for (let i = 1; i < n - 1; i++) a[i] = m[i] / Math.sqrt(phi);
+        a[0] = -an; a[n - 1] = an;
+      }
+    }
+    const W = Math.min(1, sum(a.map((c, i) => c * xs[i])) ** 2 / ss);
+    let p;
+    if (n === 3) p = Math.max(0, 6 / Math.PI * (Math.asin(Math.sqrt(W)) - Math.asin(Math.sqrt(0.75))));
+    else if (n <= 11) {
+      const g = -2.273 + 0.459 * n, mu = 0.544 - 0.39978 * n + 0.025054 * n * n - 0.0006714 * n ** 3;
+      const sg = Math.exp(1.3822 - 0.77857 * n + 0.062767 * n * n - 0.0020322 * n ** 3);
+      p = 1 - pnorm((-Math.log(g - Math.log(1 - W)) - mu) / sg);
+    } else {
+      const L = Math.log(n), mu = -1.5861 - 0.31082 * L - 0.083751 * L * L + 0.0038915 * L ** 3;
+      const sg = Math.exp(-0.4803 - 0.082676 * L + 0.0030302 * L * L);
+      p = 1 - pnorm((Math.log(1 - W) - mu) / sg);
+    }
+    return { W, p };
+  }
+  function pairedT(A, B) {
+    const d = A.map((v, i) => v - B[i]), n = d.length; if (n < 2) return null;
+    const md = mean(d), s = sd(d); if (!(s > 0)) return null;
+    const t = md / (s / Math.sqrt(n));
+    return { t, df: n - 1, p: pt2(t, n - 1), dz: md / s };
+  }
+  function wilcoxon(A, B) {
+    const d = A.map((v, i) => v - B[i]).filter(v => v !== 0), n = d.length; if (n < 1) return null;
+    const { r, ties } = rank(d.map(Math.abs));
+    const wp = sum(r.filter((_, i) => d[i] > 0)), wm = n * (n + 1) / 2 - wp;
+    const mu = n * (n + 1) / 4, sg = Math.sqrt(n * (n + 1) * (2 * n + 1) / 24 - ties / 48);
+    const z = sg > 0 ? (wp - mu) / sg : 0;
+    let p = 2 * (1 - pnorm(Math.abs(z))), metode = "pendekatan normal";
+    if (ties === 0 && n <= 30 && d.length === A.length) {
+      const max = n * (n + 1) / 2, cnt = new Array(max + 1).fill(0); cnt[0] = 1;
+      for (let k = 1; k <= n; k++) for (let s = max; s >= k; s--) cnt[s] += cnt[s - k];
+      const total = 2 ** n, w = Math.min(wp, wm); let c = 0;
+      for (let s = 0; s <= w; s++) c += cnt[s];
+      p = Math.min(1, 2 * c / total); metode = "eksak";
+    }
+    return { n, wp, wm, W: Math.min(wp, wm), z, p, r: Math.abs(z) / Math.sqrt(n), rrb: (wp - wm) / (wp + wm), metode };
+  }
+  function mannWhitney(X, Y) {
+    const n1 = X.length, n2 = Y.length; if (!n1 || !n2) return null;
+    const { r, ties } = rank([...X, ...Y]), N = n1 + n2;
+    const U = sum(r.slice(0, n1)) - n1 * (n1 + 1) / 2;
+    const sg = Math.sqrt(n1 * n2 / 12 * ((N + 1) - ties / (N * (N - 1))));
+    const z = sg > 0 ? (U - n1 * n2 / 2) / sg : 0;
+    return { U, z, p: 2 * (1 - pnorm(Math.abs(z))) };
+  }
+  return { sum, mean, sd, median, pnorm, qnorm, shapiro, pairedT, wilcoxon, mannWhitney };
+})();
+
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (x, d = 2) => (x == null || !isFinite(x)) ? "–" : x.toFixed(d).replace(".", ",");
+const fp = p => p == null || !isFinite(p) ? "–" : p < 0.001 ? "< 0,001" : fmt(p, 3);
+const store = {
+  get(k, t) { try { return (t || localStorage).getItem(k); } catch (e) { return null; } },
+  set(k, v, t) { try { v == null ? (t || localStorage).removeItem(k) : (t || localStorage).setItem(k, v); } catch (e) { } },
+  json(k, d, t) { try { return JSON.parse(this.get(k, t)) ?? d; } catch (e) { return d; } }
+};
+const OPTS = ["Tidak sama sekali", "Beberapa hari", "Lebih dari separuh hari", "Hampir setiap hari"];
+const ITEMS = [
+  ["Kecemasan", "Merasa gugup, cemas, atau tegang", "Cemas atau tegang"],
+  ["Kecemasan", "Tidak mampu menghentikan atau mengendalikan rasa khawatir", "Sulit berhenti khawatir"],
+  ["Kecemasan", "Terlalu mengkhawatirkan berbagai hal", "Khawatir banyak hal"],
+  ["Kecemasan", "Sulit untuk bersantai", "Sulit bersantai"],
+  ["Kecemasan", "Sangat gelisah sehingga sulit untuk duduk diam", "Sangat gelisah"],
+  ["Kecemasan", "Menjadi mudah kesal atau mudah tersinggung", "Mudah kesal"],
+  ["Kecemasan", "Merasa takut seolah-olah sesuatu yang buruk akan terjadi", "Takut hal buruk terjadi"],
+  ["Suasana hati", "Kurang tertarik atau kurang senang dalam melakukan apa pun", "Kurang minat"],
+  ["Suasana hati", "Merasa sedih, murung, atau putus asa", "Sedih atau putus asa"],
+  ["Suasana hati", "Sulit tidur, mudah terbangun, atau tidur terlalu banyak", "Masalah tidur"],
+  ["Suasana hati", "Merasa lelah atau kurang bertenaga", "Lelah"],
+  ["Suasana hati", "Nafsu makan berkurang atau makan berlebihan", "Nafsu makan berubah"],
+  ["Suasana hati", "Merasa buruk tentang diri sendiri, merasa gagal, atau mengecewakan diri sendiri atau keluarga", "Merasa buruk tentang diri"],
+  ["Suasana hati", "Sulit berkonsentrasi, misalnya saat membaca atau menonton", "Sulit konsentrasi"],
+  ["Suasana hati", "Bergerak atau berbicara sangat lambat sampai orang lain memperhatikan, atau justru sangat gelisah", "Lambat atau sangat gelisah"],
+  ["Suasana hati", "Berpikir lebih baik mati atau ingin menyakiti diri sendiri", "Pikiran menyakiti diri"]];
+const KARTU = { 1: [1, 2, 1, 0, 1, 2, 1, 1, 1, 2, 1, 0, 1, 2, 0, 0], 2: [2, 1, 0, 1, 2, 1, 1, 0, 2, 1, 1, 1, 2, 0, 1, 0] };
+const PERSONA = { 1: "Dinda", 2: "Bima" };
+const DNAME = { A: "Desain A · satu halaman", B: "Desain B · per halaman" };
+const SUSQ = ["Saya rasa saya akan sering menggunakan fitur skrining ini.", "Saya merasa fitur skrining ini rumit tanpa perlu.", "Saya merasa fitur skrining ini mudah digunakan.", "Saya merasa butuh bantuan orang lain untuk bisa menggunakan fitur skrining ini.", "Saya merasa bagian-bagian fitur skrining ini menyatu dengan baik.", "Saya merasa ada terlalu banyak hal yang tidak konsisten di fitur skrining ini.", "Saya rasa kebanyakan orang akan cepat belajar menggunakan fitur skrining ini.", "Saya merasa fitur skrining ini merepotkan untuk digunakan.", "Saya merasa percaya diri saat menggunakan fitur skrining ini.", "Saya perlu mempelajari banyak hal sebelum bisa menggunakan fitur skrining ini."];
+const DEMO = [["usia", "Usia", ["18–19", "20–21", "22–23", "≥ 24"]], ["jk", "Jenis kelamin", ["Perempuan", "Laki-laki", "Tidak ingin menjawab"]], ["angkatan", "Angkatan", ["2022", "2023", "2024", "2025", "Lainnya"]], ["app", "Seberapa sering Anda memakai aplikasi kesehatan di HP?", ["Hampir setiap hari", "Beberapa kali sebulan", "Pernah, tapi jarang", "Tidak pernah"]], ["skrining", "Pernah mengisi skrining psikologis online?", ["Pernah", "Belum"]], ["hp", "Rata-rata memakai HP per hari", ["< 3 jam", "3–6 jam", "> 6 jam"]]];
+const DEPT = ["Teknik Biomedis", "Teknik Elektro", "Teknologi Informasi", "Teknik Sipil", "Teknik Lingkungan", "Teknik Mesin", "Teknik Industri", "Teknik Kimia", "Teknik Geologi", "Teknik Geodesi", "Arsitektur", "Perencanaan Wilayah dan Kota", "Teknik Fisika", "Teknik Nuklir"];
+const susScore = a => a.every(v => v >= 1) ? 2.5 * a.reduce((s, v, i) => s + (i % 2 === 0 ? v - 1 : 5 - v), 0) : null;
+
+function kartuHTML(k) {
+  return `<div class="kartu"><span class="pill">Kartu Skenario ${k}</span><h3 style="margin-top:6px">Anda berperan sebagai ${PERSONA[k]}</h3><p class="muted">Dalam 2 minggu terakhir, ${PERSONA[k]} mengalami hal berikut. Pilih jawaban persis seperti di kartu.</p><table>${ITEMS.map((it, i) => `<tr><td>${i + 1}</td><td>${esc(it[2])}</td><td>${OPTS[KARTU[k][i]]}</td></tr>`).join("")}</table></div>`;
+}
+function openSheet(html, { onClose, closeText = "Tutup" } = {}) {
+  const o = document.createElement("div"); o.className = "sheet-bg";
+  o.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>${html}<button class="ghost block" data-x>${closeText}</button></div>`;
+  const close = () => { o.remove(); document.removeEventListener("keydown", key); onClose && onClose(); };
+  const key = e => { if (e.key === "Escape") close(); };
+  o.addEventListener("click", e => { if (e.target === o || e.target.closest("[data-x]")) close(); });
+  document.addEventListener("keydown", key);
+  document.body.append(o); return { el: o, close };
+}
+
+/* Prototipe SafeSpace: Desain A (satu halaman) dan Desain B (per halaman) */
+function mountPhone(host, { design, kartu, full, onStart, onDone }) {
+  const ph = document.createElement("div"); ph.className = "phone" + (full ? " full" : ""); host.replaceChildren(ph);
+  const st = { ans: Array(16).fill(null), koreksi: 0, kembali: 0, t0: null, t1: null, i: 0, lock: false };
+  const sbar = `<div class="sbar"><span class="logo">SafeSpace</span><button class="sos" data-a="sos">Bantuan darurat</button></div>`;
+  const bnav = `<div class="bnav"><span>Beranda</span><b>Skrining</b><span>Tren</span></div>`;
+  const toast = msg => { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; ph.append(t); setTimeout(() => t.remove(), 2600); };
+  const intro = () => {
+    ph.innerHTML = sbar + `<div class="screen"><div class="pad"><p class="stem">Kode anonim: SS-4821</p><h4>Skrining singkat</h4><p>16 pertanyaan tentang kondisi Anda dalam 2 minggu terakhir. Perkiraan waktu 4 menit. Jawaban tersimpan dengan kode anonim, bukan nama atau NIM.</p><div class="lvl"><p>7 pertanyaan tentang kecemasan dan 9 tentang suasana hati.</p></div><button class="pbtn" data-a="mulai">Mulai skrining</button></div></div>` + bnav;
+  };
+  const itemHTML = i => `<div class="item"><p class="qt">${i + 1}. ${esc(ITEMS[i][1])}</p><div class="opts2">${OPTS.map((o, v) => `<button class="opt${st.ans[i] === v ? " sel" : ""}" data-i="${i}" data-v="${v}" aria-pressed="${st.ans[i] === v}">${o}</button>`).join("")}</div></div>`;
+  const renderA = () => {
+    const n = st.ans.filter(v => v != null).length;
+    ph.innerHTML = sbar + `<div class="screen"><div class="stick"><div class="row"><b>Skrining</b><span data-cnt>${n} dari 16 terjawab</span></div><div class="prog"><i style="width:${n / 16 * 100}%"></i></div></div><div class="pad"><p class="stem">Dalam 2 minggu terakhir, seberapa sering Anda terganggu oleh hal berikut?</p><p class="sec">Bagian 1 · Kecemasan</p>${[0, 1, 2, 3, 4, 5, 6].map(itemHTML).join("")}<p class="sec">Bagian 2 · Suasana hati</p>${[7, 8, 9, 10, 11, 12, 13, 14, 15].map(itemHTML).join("")}<button class="pbtn" data-a="lihat">Lihat hasil</button></div></div>` + bnav;
+  };
+  const renderB = () => {
+    const i = st.i, n = st.ans.filter(v => v != null).length;
+    if (i >= 16) {
+      ph.innerHTML = sbar + `<div class="screen"><div class="stick"><div class="row"><button class="back" data-a="back">← Kembali</button><b>16/16</b></div><div class="prog"><i style="width:100%"></i></div></div><div class="pad"><h4>Semua pertanyaan terjawab</h4><p>${n} dari 16 pertanyaan sudah dijawab. Tekan tombol di bawah untuk melihat hasil.</p><button class="pbtn" data-a="lihat">Lihat hasil</button></div></div>` + bnav;
+      return;
+    }
+    ph.innerHTML = sbar + `<div class="screen"><div class="stick"><div class="row"><button class="back" data-a="back" ${i === 0 ? 'style="visibility:hidden"' : ""}>← Kembali</button><b>${i + 1}/16</b></div><div class="prog"><i style="width:${i / 16 * 100}%"></i></div></div><div class="pad"><p class="sec">${i < 7 ? "Bagian 1 · Kecemasan" : "Bagian 2 · Suasana hati"}</p><p class="stem">Dalam 2 minggu terakhir, seberapa sering Anda terganggu oleh:</p><p class="qcard">${esc(ITEMS[i][1])}</p>${OPTS.map((o, v) => `<button class="opt optv${st.ans[i] === v ? " sel" : ""}" data-i="${i}" data-v="${v}" aria-pressed="${st.ans[i] === v}">${o}</button>`).join("")}</div></div>` + bnav;
+  };
+  const level = (s, phq) => s < 5 ? "Minimal" : s < 10 ? "Ringan" : s < 15 ? "Sedang" : phq && s < 20 ? "Sedang–berat" : "Berat";
+  const hasil = () => {
+    const v = st.ans.map(x => x ?? 0), g = v.slice(0, 7).reduce((a, b) => a + b, 0), p = v.slice(7).reduce((a, b) => a + b, 0), perlu = g >= 10 || p >= 10;
+    ph.innerHTML = sbar + `<div class="screen"><div class="pad"><p class="stem">Hasil skrining · bukan diagnosis</p><h4>Kondisi saat ini</h4>
+<div class="lvl"><span>Kecemasan</span><strong>${level(g)}</strong><span class="stem">skor ${g} dari 21</span></div>
+<div class="lvl"><span>Suasana hati</span><strong>${level(p, true)}</strong><span class="stem">skor ${p} dari 27</span></div>
+<p>${perlu ? "Beberapa keluhan sudah cukup sering muncul. Berbicara dengan konselor bisa membantu, dan tidak harus menunggu sampai terasa berat." : "Keluhan masih tergolong ringan. Tetap pantau kondisi, karena perubahan kecil lebih mudah ditangani lebih awal."}</p>
+<p><b>Saran untuk minggu ini</b></p><p>1. Coba check-in mood harian selama 7 hari.<br>2. Atur jeda istirahat di sela tugas.<br>3. Ceritakan pada orang yang dipercaya.</p>
+<p class="stem"><b>Kapan sebaiknya ke konselor:</b> jika salah satu skor ≥ 10, atau keluhan mengganggu kuliah lebih dari 2 minggu.</p>
+${v[15] > 0 ? `<div class="lvl" style="background:#F6E1DC"><b>Anda tidak sendiri.</b><span>Hubungi Layanan Psikologi FT atau SEJIWA 119 ekstensi 8.</span></div>` : ""}
+<button class="pbtn" data-a="konseling">Ajukan konseling FT (gratis)</button><button class="pbtn alt" data-a="tren">Simpan ke tren</button></div></div>` + bnav;
+  };
+  const finish = () => {
+    st.t1 = performance.now();
+    const k = kartu ? KARTU[kartu] : null, terlewat = st.ans.filter(v => v == null).length, salah = k ? st.ans.filter((v, i) => v != null && v !== k[i]).length : null;
+    const res = { desain: design, kartu: kartu ? +kartu : null, waktu: Math.round((st.t1 - st.t0) / 100) / 10, terlewat, salah, error: salah == null ? null : terlewat + salah, koreksi: st.koreksi, kembali: st.kembali, jawaban: st.ans.map(v => v ?? -1) };
+    hasil(); onDone && onDone(res);
+  };
+  ph.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const a = b.dataset.a;
+    if (a === "sos") return toast("Prototipe: membuka kontak Layanan Psikologi FT dan SEJIWA 119 ekst. 8.");
+    if (a === "konseling") return toast("Prototipe: membuka formulir booking Layanan Psikologi FT.");
+    if (a === "tren") return toast("Prototipe: hasil disimpan ke grafik tren.");
+    if (a === "mulai") { st.t0 = performance.now(); onStart && onStart(st.t0); design === "A" ? renderA() : renderB(); return; }
+    if (a === "lihat") return finish();
+    if (a === "back") { if (st.i > 0) { st.i--; st.kembali++; renderB(); } return; }
+    if (b.dataset.i == null) return;
+    const i = +b.dataset.i, v = +b.dataset.v;
+    if (design === "B" && st.lock) return;
+    if (st.ans[i] != null && st.ans[i] !== v) st.koreksi++;
+    st.ans[i] = v;
+    $$(".opt", b.parentElement).forEach(o => { o.classList.toggle("sel", o === b); o.setAttribute("aria-pressed", o === b); });
+    if (design === "A") {
+      const n = st.ans.filter(x => x != null).length;
+      $("[data-cnt]", ph).textContent = `${n} dari 16 terjawab`; $(".prog i", ph).style.width = n / 16 * 100 + "%";
+    } else { st.lock = true; setTimeout(() => { st.lock = false; st.i = i + 1; renderB(); }, 300); }
+  });
+  intro();
+  return st;
+}
+
+/* Penyimpanan: Google Apps Script, atau mode pratinjau (data di browser ini) */
+const API = (() => {
+  const PKEY = "ss_preview_db";
+  const pv = () => store.json(PKEY, { next: 1, rows: {}, pending: {} });
+  const pvSave = d => store.set(PKEY, JSON.stringify(d));
+  function chooseOrder(rows, pending) {
+    const now = Date.now(), c = { "A→B": 0, "B→A": 0 };
+    Object.values(rows).forEach(r => { if (!r.latihan && c[r.urutan] != null) c[r.urutan]++; });
+    Object.values(pending).forEach(p => { if (now - p.t < 45 * 60e3 && c[p.urutan] != null) c[p.urutan]++; });
+    return c["A→B"] <= c["B→A"] ? "A→B" : "B→A";
+  }
+  async function call(url, params, body) {
+    const q = new URLSearchParams(params).toString();
+    const res = await fetch(url + (url.includes("?") ? "&" : "?") + q, body ? { method: "POST", body: JSON.stringify(body) } : {});
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const j = await res.json(); if (!j.ok) throw new Error(j.error || "gagal");
+    return j;
+  }
+  return {
+    preview: url => !url,
+    async assign(url, latihan) {
+      if (url) return call(url, { action: "assign", latihan: latihan ? 1 : 0 });
+      const d = pv();
+      if (latihan) return { ok: true, kode: "L-" + Date.now().toString(36).toUpperCase(), urutan: "A→B" };
+      const kode = "P" + String(d.next++).padStart(2, "0"), urutan = chooseOrder(d.rows, d.pending);
+      d.pending[kode] = { urutan, t: Date.now() }; pvSave(d); return { ok: true, kode, urutan };
+    },
+    async submit(url, rec) {
+      if (url) return call(url, {}, { action: "submit", rec });
+      const d = pv(); d.rows[rec.kode] = rec; delete d.pending[rec.kode]; pvSave(d); return { ok: true };
+    },
+    async list(url, key) {
+      if (url) return (await call(url, { action: "list", key })).rows;
+      return Object.values(pv().rows);
+    },
+    async remove(url, key, kode) {
+      if (url) return call(url, { action: "delete", key, kode });
+      const d = pv(); delete d.rows[kode]; pvSave(d); return { ok: true };
+    },
+    chooseOrder
+  };
+})();
+
+{
+const app = $("#app");
+let cfg = store.json("ss_owner", null);           // {url, key, link, preview}
+const BAKED = typeof SCRIPT_URL !== "undefined" ? SCRIPT_URL : "";
+let loginErr = "";
+if (BAKED && (!cfg || (!cfg.preview && !cfg.url))) cfg = { ...(cfg || {}), url: BAKED, preview: false };
+{ const m = location.hash.match(/^#kunci=(.+)$/);
+  if (m) { cfg = { ...(cfg || {}), url: (cfg && cfg.url) || BAKED, key: decodeURIComponent(m[1]), preview: false }; store.set("ss_owner", JSON.stringify(cfg)); history.replaceState(null, "", location.pathname + location.search + "#ringkasan"); } }
+let rows = [], loaded = false, lastErr = null, lastAt = null, timer = null, showLat = false, demoState = { d: "A", kartu: "1" };
+const saveCfg = () => store.set("ss_owner", JSON.stringify(cfg));
+const url = () => cfg && !cfg.preview ? cfg.url : "";
+const num = v => typeof v === "number" && isFinite(v);
+const complete = d => d && d.A && d.B && num(d.A.waktu) && num(d.B.waktu) && num(d.A.susSkor) && num(d.B.susSkor);
+const lblR = r => r < 0.1 ? "sangat kecil" : r < 0.3 ? "kecil" : r < 0.5 ? "sedang" : "besar";
+const lblD = d => { d = Math.abs(d); return d < 0.2 ? "sangat kecil" : d < 0.5 ? "kecil" : d < 0.8 ? "sedang" : "besar"; };
+const td = (l, v, c = "") => `<td data-l="${esc(l)}" class="${c}">${v}</td>`;
+const VIEWS = [["ringkasan", "Ringkasan"], ["statistik", "Statistik"], ["peserta", "Peserta"], ["data", "Data"], ["desain", "Coba desain"], ["pengaturan", "Pengaturan"]];
+const view = () => { const v = location.hash.slice(1); return VIEWS.some(x => x[0] === v) ? v : "ringkasan"; };
+const partLink = lat => { const b = (cfg && cfg.link) || new URL("index.html", location.href).href; return lat ? b + (b.includes("?") ? "&" : "?") + "latihan=1" : b; };
+
+async function load(quiet) {
+  try { rows = await API.list(url(), cfg.key); lastErr = null; lastAt = new Date(); loaded = true; }
+  catch (e) {
+    lastErr = String(e.message || e); loaded = true;
+    if (lastErr === "kunci" && cfg && !cfg.preview) { cfg.key = ""; saveCfg(); loginErr = "Kunci tidak cocok. Ketik ulang kunci dasbor."; loaded = false; return render(); }
+  }
+  if (!quiet || ["ringkasan", "data", "statistik", "peserta"].includes(view())) render();
+}
+function header() {
+  const st = cfg.preview ? `<span class="dot pv"></span>Mode pratinjau (data di browser ini)` : lastErr ? `<span class="dot err"></span>Gagal memuat: ${esc(lastErr)}` : loaded ? `<span class="dot on"></span>Terhubung · diperbarui ${lastAt.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}` : `<span class="dot"></span>Memuat…`;
+  return `<header class="top"><div class="top-in"><div class="brandrow"><span class="brand">SafeSpace<small>Dasbor peneliti</small></span><span class="status">${st}</span><button class="small ghost" id="rf">Muat ulang</button></div><nav class="tabs" aria-label="Bagian">${VIEWS.map(([k, l]) => `<a href="#${k}" class="${view() === k ? "on" : ""}">${l}</a>`).join("")}</nav></div></header>`;
+}
+function render() {
+  if (!cfg || (!cfg.preview && !(cfg.url && cfg.key))) return login();
+  const v = view(), main = rows.filter(d => !d.latihan && complete(d)), lat = rows.filter(d => d.latihan);
+  let body = "";
+  if (!loaded) body = `<p class="muted">Memuat data…</p>`;
+  else if (v === "ringkasan") body = ringkasan(main, lat);
+  else if (v === "statistik") body = statistik(main);
+  else if (v === "peserta") body = peserta(main);
+  else if (v === "data") body = dataView();
+  else if (v === "pengaturan") body = pengaturan();
+  app.innerHTML = header() + `<main class="main">${v === "desain" ? "" : body}</main>`;
+  $("#rf").onclick = () => { loaded = false; render(); load(); };
+  if (v === "desain") desain($(".main"));
+  if (v === "statistik" && loaded && main.length >= 3) { slope($("#gS"), analyse(main, "susSkor"), "Skor SUS (0–100)"); slope($("#gW"), analyse(main, "waktu"), "Waktu skrining (detik)"); }
+  if (!loaded) return;
+  if (v === "data") bindData();
+  if (v === "pengaturan") bindSet();
+  if (v === "ringkasan") bindCopy();
+}
+
+function login() {
+  app.innerHTML = `<div class="main"><div class="login"><h1>Dasbor peneliti</h1><p>Khusus pemilik studi. Ketik kunci dasbor sekali saja: perangkat ini akan mengingatnya, jadi lain kali dasbor langsung terbuka.</p>
+<form class="card" id="lf"><label>Kunci dasbor<input type="password" id="k" autocomplete="current-password" placeholder="sama dengan KUNCI di Apps Script" value="${esc(cfg && cfg.key || "")}" autofocus></label>
+${BAKED ? `<details><summary class="muted">Pakai URL Web App lain</summary><label>URL Web App<input type="url" id="u" value="${esc(cfg && cfg.url || BAKED)}"></label></details>` : `<label>URL Web App Google Apps Script<input type="url" id="u" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(cfg && cfg.url || "")}"></label>`}
+<p id="e" class="warn" ${loginErr ? "" : "hidden"}>${esc(loginErr)}</p><button id="go" type="submit">Masuk</button></form>
+${BAKED ? "" : `<div class="card"><h3>Belum pasang Apps Script?</h3><p class="muted">Pakai mode pratinjau untuk mencoba dasbor dengan data dari halaman peserta yang dibuka di browser yang sama.</p><button class="ghost" id="pv">Masuk mode pratinjau</button></div>`}</div></div>`;
+  loginErr = "";
+  $("#lf").onsubmit = async ev => {
+    ev.preventDefault();
+    const u = ($("#u") && $("#u").value.trim()) || BAKED, k = $("#k").value.trim();
+    if ((u !== BAKED && !/^https:\/\/script\.google(usercontent)?\.com\//.test(u)) || !k) { $("#e").hidden = false; $("#e").textContent = "Isi URL Web App (diawali https://script.google.com/) dan kunci dasbor."; return; }
+    $("#go").disabled = true; $("#go").textContent = "Memeriksa…";
+    try { await API.list(u, k); cfg = { ...(cfg || {}), url: u, key: k, preview: false }; saveCfg(); loaded = false; render(); load(); }
+    catch (e) { $("#e").hidden = false; $("#e").textContent = "Tidak bisa masuk: " + (e.message === "kunci" ? "kunci salah." : "URL tidak menjawab. Pastikan Web App sudah di-deploy dengan akses “Anyone”."); $("#go").disabled = false; $("#go").textContent = "Masuk"; }
+  };
+  if ($("#pv")) $("#pv").onclick = () => { cfg = { ...(cfg || {}), preview: true }; saveCfg(); loaded = false; render(); load(); };
+}
+
+function ringkasan(main, lat) {
+  const target = 30, n = main.length, ab = main.filter(d => d.urutan === "A→B").length, ba = n - ab;
+  const dur = main.map(d => (new Date(d.selesai) - new Date(d.mulai)) / 60000).filter(x => x > 0 && x < 180);
+  const recent = [...rows].sort((a, b) => String(b.selesai).localeCompare(String(a.selesai))).slice(0, 6);
+  const sus = n >= 1 ? [S.mean(main.map(d => d.A.susSkor)), S.mean(main.map(d => d.B.susSkor))] : null;
+  const wk = n >= 1 ? [S.mean(main.map(d => d.A.waktu)), S.mean(main.map(d => d.B.waktu))] : null;
+  return `<h1>${n >= target ? "Target peserta tercapai" : `${target - n} peserta lagi menuju target`}</h1>
+<div class="grid">
+<div class="card"><p class="muted">Peserta lengkap</p><p class="big">${n}<small> / ${target}</small></p><div class="meter" aria-hidden="true"><i style="width:${Math.min(100, n / target * 100)}%;background:var(--teal)"></i></div><p class="muted">${lat.length ? `${lat.length} sesi latihan tidak dihitung.` : "Sesi latihan tidak dihitung."}</p></div>
+<div class="card"><p class="muted">Keseimbangan urutan (counterbalancing)</p><p class="v">${ab} · ${ba}</p><div class="meter" aria-hidden="true"><i style="width:${n ? ab / n * 100 : 50}%;background:var(--teal)"></i><i style="flex:1;background:var(--maroon2)"></i></div><div class="split"><span>A→B</span><span>B→A</span></div><p class="muted">${Math.abs(ab - ba) <= 1 ? "Seimbang." : "Belum seimbang. Server akan memberi urutan yang kurang ke peserta berikutnya."}</p></div>
+<div class="card"><p class="muted">Rata-rata sementara A · B</p><p class="v">${sus ? fmt(sus[0], 1) + " · " + fmt(sus[1], 1) : "–"}</p><p class="muted">skor SUS</p><p class="v" style="font-size:26px">${wk ? fmt(wk[0], 0) + " · " + fmt(wk[1], 0) + " dtk" : "–"}</p><p class="muted">waktu skrining</p></div>
+<div class="card"><p class="muted">Lama satu sesi</p><p class="v">${dur.length ? fmt(S.median(dur), 1) + " mnt" : "–"}</p><p class="muted">median dari consent sampai kirim</p></div></div>
+<div class="g2"><div class="card"><h3>Sesi terbaru</h3><div class="feed">${recent.length ? recent.map(d => `<div><span><b>${esc(d.kode)}</b>${d.latihan ? " · latihan" : ""} · ${esc(d.urutan)}</span><span class="muted">${esc(d.selesai ? new Date(d.selesai).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "")}</span></div>`).join("") : `<p class="muted">Belum ada peserta. Bagikan link di samping.</p>`}</div></div>
+<div class="card"><h3>Link untuk peserta</h3><p class="muted">Bagikan link ini di grup angkatan. Peserta tidak perlu login dan tidak bisa melihat hasil siapa pun.</p><div class="copy"><input type="text" readonly id="pl" value="${esc(partLink())}"><button class="small" data-copy="pl">Salin</button></div><p class="muted">Link latihan (tidak masuk analisis):</p><div class="copy"><input type="text" readonly id="ll" value="${esc(partLink(true))}"><button class="small ghost" data-copy="ll">Salin</button></div><p class="muted" id="cm"></p></div></div>`;
+}
+function bindCopy() { $$("[data-copy]").forEach(b => b.onclick = async () => { const i = $("#" + b.dataset.copy); try { await navigator.clipboard.writeText(i.value); $("#cm").textContent = "Disalin."; } catch (e) { i.select(); $("#cm").textContent = "Tekan Ctrl+C / salin manual."; } }); }
+
+function analyse(rs, key) {
+  const A = rs.map(r => r.A[key]), B = rs.map(r => r.B[key]), d = A.map((v, i) => v - B[i]);
+  return { key, A, B, n: A.length, mA: S.mean(A), mB: S.mean(B), sA: S.sd(A), sB: S.sd(B), mdA: S.median(A), mdB: S.median(B), sw: S.shapiro(d), t: S.pairedT(A, B), w: S.wilcoxon(A, B) };
+}
+const chooser = a => a.key === "waktu" && a.sw && a.sw.p > 0.05 && a.t ? "t" : "w";
+function sentence(a, label, unit) {
+  const u = unit ? " " + unit : "";
+  if (chooser(a) === "t") return `${label} Desain A (M = ${fmt(a.mA, 1)}${u}, SD = ${fmt(a.sA, 1)}) dan Desain B (M = ${fmt(a.mB, 1)}${u}, SD = ${fmt(a.sB, 1)}) ${a.t.p < 0.05 ? "berbeda signifikan" : "tidak berbeda signifikan"}, paired t-test t(${a.t.df}) = ${fmt(a.t.t, 2)}, p ${a.t.p < 0.001 ? "< 0,001" : "= " + fmt(a.t.p, 3)}, dz = ${fmt(a.t.dz, 2)} (efek ${lblD(a.t.dz)}).`;
+  if (!a.w) return `${label}: semua selisih A − B bernilai nol, jadi tidak ada perbedaan untuk diuji.`;
+  return `${label} Desain A (Mdn = ${fmt(a.mdA, 1)}${u}) dan Desain B (Mdn = ${fmt(a.mdB, 1)}${u}) ${a.w.p < 0.05 ? "berbeda signifikan" : "tidak berbeda signifikan"}, Wilcoxon signed-rank Z = ${fmt(a.w.z, 2)}, p ${a.w.p < 0.001 ? "< 0,001" : "= " + fmt(a.w.p, 3)} (${a.w.metode}), r = ${fmt(a.w.r, 2)} (efek ${lblR(a.w.r)}).`;
+}
+function statistik(main) {
+  if (main.length < 3) return `<h1>Statistik</h1><div class="card"><h3>Belum cukup data</h3><p>Statistik muncul setelah minimal 3 peserta lengkap. Saat ini: ${main.length}.</p></div>`;
+  const sus = analyse(main, "susSkor"), wkt = analyse(main, "waktu"), er = main.filter(d => num(d.A.error) && num(d.B.error)), err = er.length >= 3 ? analyse(er, "error") : null;
+  const row = (a, nm) => { const c = chooser(a), p = c === "t" ? a.t && a.t.p : a.w && a.w.p, sig = p < 0.05;
+    return `<tr>${td("Metrik", `<b>${nm}</b>`)}${td("A: rata-rata (SD)", `${fmt(a.mA, 1)} (${fmt(a.sA, 1)})`, "n")}${td("B: rata-rata (SD)", `${fmt(a.mB, 1)} (${fmt(a.sB, 1)})`, "n")}${td("Median A · B", `${fmt(a.mdA, 1)} · ${fmt(a.mdB, 1)}`, "n")}${td("Shapiro-Wilk selisih", a.sw ? `W = ${fmt(a.sw.W, 3)}, p = ${fp(a.sw.p)}` : "–", "n")}${td("Uji", c === "t" ? "Paired t-test" : "Wilcoxon signed-rank")}${td("Statistik", c === "t" ? `t(${a.t.df}) = ${fmt(a.t.t, 2)}` : a.w ? `Z = ${fmt(a.w.z, 2)}` : "–", "n")}${td("p", fp(p), "n")}${td("Efek", c === "t" ? `dz = ${fmt(a.t.dz, 2)}` : a.w ? `r = ${fmt(a.w.r, 2)}` : "–", "n")}${td("Keputusan", sig ? "Tolak H0" : "Gagal tolak H0", sig ? "yes" : "")}</tr>`; };
+  const g1 = main.filter(d => d.urutan === "A→B"), g2 = main.filter(d => d.urutan === "B→A"), dW = g => g.map(d => d.A.waktu - d.B.waktu), mw = S.mannWhitney(dW(g1), dW(g2));
+  const pos = (d, k, p) => d.A.posisi === p ? d.A[k] : d.B[k];
+  const t1 = main.map(d => pos(d, "waktu", 1)), t2 = main.map(d => pos(d, "waktu", 2)), s1 = main.map(d => pos(d, "susSkor", 1)), s2 = main.map(d => pos(d, "susSkor", 2));
+  return `<h1>Statistik: Desain A vs Desain B</h1><p class="muted">${main.length} peserta lengkap · uji berpasangan, α = 0,05, dua arah.</p>
+<div class="card"><span class="pill">Kesimpulan otomatis</span><p class="report">${esc(sentence(sus, "Skor SUS"))}</p><p class="report">${esc(sentence(wkt, "Waktu skrining", "detik"))}</p>${err ? `<p class="report">${esc(sentence(err, "Jumlah error", "butir"))}</p>` : ""}<p class="muted">Siap ditempel ke slide. Cek ulang dengan JASP bila diminta dosen.</p></div>
+<div class="card"><h3>Tabel uji</h3><div class="scroll"><table class="t stack"><thead><tr><th>Metrik</th><th>A: rata-rata (SD)</th><th>B: rata-rata (SD)</th><th>Median A · B</th><th>Shapiro-Wilk selisih</th><th>Uji</th><th>Statistik</th><th>p</th><th>Efek</th><th>Keputusan</th></tr></thead><tbody>${row(sus, "SUS")}${row(wkt, "Waktu (dtk)")}${err ? row(err, "Error") : ""}</tbody></table></div>
+<p class="muted">SUS dan error: Wilcoxon (ordinal/cacah). Waktu: paired t-test bila Shapiro-Wilk selisih p &gt; 0,05, selain itu Wilcoxon. Cek ketahanan SUS dengan paired t-test: ${sus.t ? `t(${sus.t.df}) = ${fmt(sus.t.t, 2)}, p = ${fp(sus.t.p)}` : "–"}.</p></div>
+<div class="g2"><div class="card"><div class="fig"><svg id="gS" role="img" aria-label="Skor SUS per peserta"></svg></div><p class="muted">Satu garis = satu peserta. Garis marun = rata-rata.</p></div><div class="card"><div class="fig"><svg id="gW" role="img" aria-label="Waktu skrining per peserta"></svg></div><p class="muted">Garis turun dari A ke B = lebih cepat di B.</p></div></div>
+<div class="card"><h3>Cek efek urutan</h3><div class="scroll"><table class="t"><thead><tr><th></th><th>Percobaan 1</th><th>Percobaan 2</th><th>Selisih</th></tr></thead><tbody><tr><td>Waktu rata-rata (dtk)</td><td class="n">${fmt(S.mean(t1), 1)}</td><td class="n">${fmt(S.mean(t2), 1)}</td><td class="n">${fmt(S.mean(t1) - S.mean(t2), 1)}</td></tr><tr><td>SUS rata-rata</td><td class="n">${fmt(S.mean(s1), 1)}</td><td class="n">${fmt(S.mean(s2), 1)}</td><td class="n">${fmt(S.mean(s1) - S.mean(s2), 1)}</td></tr></tbody></table></div>
+<p>A→B: ${g1.length} orang · B→A: ${g2.length} orang. Mann-Whitney selisih waktu antar grup: ${mw ? `U = ${fmt(mw.U, 1)}, p = ${fp(mw.p)}` : "–"}. ${mw ? (mw.p > 0.05 ? "Tidak ada bukti efek urutan." : "Ada indikasi efek urutan, bahas di interpretasi.") : ""}</p></div>`;
+}
+function slope(svg, a, title) {
+  const draw = () => {
+    const W = svg.clientWidth, H = svg.clientHeight; if (!W || !H) return;
+    const all = [...a.A, ...a.B], lo = Math.min(...all), hi = Math.max(...all), pad = (hi - lo) * 0.08 || 1, y0 = lo - pad, y1 = hi + pad, top = 34, bot = H - 40, xA = W * 0.28, xB = W * 0.72;
+    const Y = v => bot - (v - y0) / (y1 - y0) * (bot - top), tk = [0, 1, 2, 3, 4].map(i => y0 + (y1 - y0) * i / 4);
+    let s = `<text x="0" y="16" font-size="14" font-weight="700" fill="#6B645E">${esc(title)}</text>`;
+    s += tk.map(v => `<line x1="40" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="#D9D6CC"/>${W > 360 ? `<text x="34" y="${Y(v) + 4}" font-size="12" text-anchor="end" fill="#6B645E">${fmt(v, 0)}</text>` : ""}`).join("");
+    s += a.A.map((v, i) => `<line x1="${xA}" y1="${Y(v)}" x2="${xB}" y2="${Y(a.B[i])}" stroke="#3F7373" stroke-opacity=".4" stroke-width="1.5"/><circle cx="${xA}" cy="${Y(v)}" r="3.5" fill="#3F7373"/><circle cx="${xB}" cy="${Y(a.B[i])}" r="3.5" fill="#3F7373"/>`).join("");
+    s += `<line x1="${xA}" y1="${Y(a.mA)}" x2="${xB}" y2="${Y(a.mB)}" stroke="#8E1F14" stroke-width="4"/><circle cx="${xA}" cy="${Y(a.mA)}" r="7" fill="#8E1F14"/><circle cx="${xB}" cy="${Y(a.mB)}" r="7" fill="#8E1F14"/><text x="${xA - 12}" y="${Y(a.mA) + 5}" font-size="14" font-weight="700" text-anchor="end" fill="#8E1F14">${fmt(a.mA, 1)}</text><text x="${xB + 12}" y="${Y(a.mB) + 5}" font-size="14" font-weight="700" fill="#8E1F14">${fmt(a.mB, 1)}</text>`;
+    s += `<text x="${xA}" y="${H - 12}" font-size="14" text-anchor="middle" fill="#6B645E">${W > 420 ? DNAME.A : "Desain A"}</text><text x="${xB}" y="${H - 12}" font-size="14" text-anchor="middle" fill="#6B645E">${W > 420 ? DNAME.B : "Desain B"}</text>`;
+    svg.innerHTML = s;
+  };
+  new ResizeObserver(draw).observe(svg); draw();
+}
+function peserta(main) {
+  const n = main.length; if (!n) return `<h1>Peserta</h1><div class="card"><p class="muted">Belum ada peserta lengkap.</p></div>`;
+  const pref = { A: 0, B: 0, "Sama saja": 0 }; main.forEach(d => { if (pref[d.preferensi] != null) pref[d.preferensi]++; });
+  const dept = {}; main.forEach(d => { const k = ((d.demo || {}).departemen || "–").trim(); dept[k] = (dept[k] || 0) + 1; });
+  const touch = main.filter(d => d.perangkat && d.perangkat.sentuh).length;
+  const als = main.filter(d => d.alasan && String(d.alasan).trim());
+  const bar = (k, c) => `<div style="display:grid;grid-template-columns:minmax(0,9em) 1fr 3em;gap:10px;align-items:center"><span>${esc(k)}</span><div class="meter"><i style="width:${c / n * 100}%;background:var(--teal)"></i></div><span class="n" style="text-align:right">${c}</span></div>`;
+  return `<h1>Peserta dan preferensi</h1>
+<div class="g2"><div class="card"><h3>Desain yang lebih disukai</h3>${bar("Satu halaman (A)", pref.A)}${bar("Per halaman (B)", pref.B)}${bar("Sama saja", pref["Sama saja"])}</div>
+<div class="card"><h3>Perangkat</h3><p><b>${touch}</b> dari ${n} peserta memakai layar sentuh (HP/tablet).</p><p class="muted">Peserta yang memakai laptop bisa memperlambat waktu. Pertimbangkan di interpretasi.</p></div></div>
+<div class="card"><h3>Demografi (n = ${n})</h3><div class="scroll"><table class="t"><thead><tr><th>Variabel</th><th>Kategori</th><th>Jumlah</th><th>%</th></tr></thead><tbody>${DEMO.map(([k, l, o]) => o.map((x, i) => { const c = main.filter(d => (d.demo || {})[k] === x).length; return `<tr><td>${i ? "" : esc(l)}</td><td>${esc(x)}</td><td class="n">${c}</td><td class="n">${fmt(c / n * 100, 0)}%</td></tr>`; }).join("")).join("")}${Object.entries(dept).sort((a, b) => b[1] - a[1]).map(([k, c], i) => `<tr><td>${i ? "" : "Departemen"}</td><td>${esc(k)}</td><td class="n">${c}</td><td class="n">${fmt(c / n * 100, 0)}%</td></tr>`).join("")}</tbody></table></div></div>
+<div class="card"><h3>Alasan peserta</h3>${als.length ? als.map(d => `<p><b>${esc(d.kode)} · ${esc(d.preferensi)}:</b> ${esc(d.alasan)}</p>`).join("") : `<p class="muted">Belum ada alasan tertulis.</p>`}</div>`;
+}
+function toCSV(list) {
+  const q = v => { const s = String(v ?? ""); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const head = ["kode", "latihan", "urutan", "usia", "jk", "angkatan", "departemen", "app_kesehatan", "pernah_skrining", "lama_hp", "layar_sentuh", "waktu_A", "waktu_B", "terlewat_A", "salah_A", "error_A", "terlewat_B", "salah_B", "error_B", "koreksi_A", "koreksi_B", "kembali_B", "kartu_dibuka_A", "kartu_dibuka_B", "sus_A", "sus_B", ...[...Array(10)].map((_, i) => "A_Q" + (i + 1)), ...[...Array(10)].map((_, i) => "B_Q" + (i + 1)), "preferensi", "alasan", "mulai", "selesai"];
+  const out = list.map(d => { const A = d.A || {}, B = d.B || {}, m = d.demo || {}, p = d.perangkat || {};
+    return [d.kode, d.latihan ? 1 : 0, d.urutan, m.usia, m.jk, m.angkatan, m.departemen, m.app, m.skrining, m.hp, p.sentuh ? 1 : 0, A.waktu, B.waktu, A.terlewat, A.salah, A.error, B.terlewat, B.salah, B.error, A.koreksi, B.koreksi, B.kembali, A.kartuDibuka, B.kartuDibuka, A.susSkor, B.susSkor, ...(A.sus || Array(10).fill("")), ...(B.sus || Array(10).fill("")), d.preferensi, d.alasan, d.mulai, d.selesai]; });
+  return [head, ...out].map(r => r.map(q).join(",")).join("\n");
+}
+function dataView() {
+  const list = [...rows].filter(d => showLat || !d.latihan).sort((a, b) => String(a.kode).localeCompare(String(b.kode)));
+  return `<h1>Data per peserta</h1><div class="card"><div class="row" style="justify-content:space-between"><label class="check"><input type="checkbox" id="sl" ${showLat ? "checked" : ""}> Tampilkan sesi latihan</label><div class="row"><button class="small" id="dl">Unduh CSV</button><button class="small ghost" id="cp">Salin CSV</button></div></div><p class="muted" id="msg">CSV memakai titik desimal agar langsung terbaca di JASP.</p>
+<div class="scroll"><table class="t stack"><thead><tr><th>Kode</th><th>Urutan</th><th>Waktu A</th><th>Waktu B</th><th>Error A</th><th>Error B</th><th>SUS A</th><th>SUS B</th><th>Suka</th><th></th></tr></thead><tbody>${list.length ? list.map(d => `<tr>${td("Kode", `<b>${esc(d.kode)}</b>${d.latihan ? " (latihan)" : ""}`)}${td("Urutan", esc(d.urutan))}${td("Waktu A", fmt(d.A && d.A.waktu, 1), "n")}${td("Waktu B", fmt(d.B && d.B.waktu, 1), "n")}${td("Error A", esc(d.A && d.A.error), "n")}${td("Error B", esc(d.B && d.B.error), "n")}${td("SUS A", fmt(d.A && d.A.susSkor, 1), "n")}${td("SUS B", fmt(d.B && d.B.susSkor, 1), "n")}${td("Suka", esc(d.preferensi))}${td("", `<button class="small ghost" data-del="${esc(d.kode)}">Hapus</button>`)}</tr>`).join("") : `<tr><td colspan="10" class="muted">Belum ada data.</td></tr>`}</tbody></table></div></div>`;
+}
+function bindData() {
+  const list = rows.filter(d => showLat || !d.latihan);
+  $("#sl").onchange = e => { showLat = e.target.checked; render(); };
+  $("#cp").onclick = async () => { try { await navigator.clipboard.writeText(toCSV(list)); $("#msg").textContent = "CSV disalin."; } catch (e) { $("#msg").textContent = "Browser menolak menyalin. Pakai Unduh CSV."; } };
+  $("#dl").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + toCSV(list)], { type: "text/csv" })); a.download = "safespace-uji-desain.csv"; document.body.append(a); a.click(); a.remove(); };
+  $$("[data-del]").forEach(b => b.onclick = () => {
+    const k = b.dataset.del, sh = openSheet(`<h3>Hapus data ${esc(k)}?</h3><p>Baris ini dihapus dari Google Sheet dan tidak bisa dikembalikan. Lakukan hanya jika peserta meminta atau datanya rusak.</p><button id="yes">Hapus permanen</button>`, { closeText: "Batal" });
+    $("#yes", sh.el).onclick = async () => { $("#yes", sh.el).disabled = true; try { await API.remove(url(), cfg.key, k); sh.close(); load(); } catch (e) { $("#yes", sh.el).textContent = "Gagal, coba lagi"; $("#yes", sh.el).disabled = false; } };
+  });
+}
+function desain(host) {
+  host.innerHTML = `<h1>Coba desain</h1><p class="muted">Mode bebas untuk demo dan tangkapan layar. Tidak ada data yang disimpan.</p>
+<div class="desk"><div class="card"><h3>Pilih desain</h3><div class="seg"><button id="dA" class="${demoState.d === "A" ? "on" : ""}">Desain A</button><button id="dB" class="${demoState.d === "B" ? "on" : ""}">Desain B</button></div><label>Kartu pembanding<select id="kt"><option value="">Tanpa kartu</option><option value="1" ${demoState.kartu === "1" ? "selected" : ""}>Kartu 1 · ${PERSONA[1]}</option><option value="2" ${demoState.kartu === "2" ? "selected" : ""}>Kartu 2 · ${PERSONA[2]}</option></select></label><p class="muted">${demoState.d === "A" ? "16 butir dalam satu gulir, penghitung terjawab menempel di atas." : "Satu butir per layar, progress bar, otomatis lanjut 0,3 detik setelah memilih."}</p>${demoState.kartu ? kartuHTML(demoState.kartu) : ""}</div><div id="ph"></div>
+<div class="card"><h3>Pengukuran</h3><p class="timer" id="tm">0,0 dtk</p><p id="rs" class="muted">Tekan “Mulai skrining”.</p><button class="ghost" id="ul">Ulangi</button></div></div>`;
+  let iv = null;
+  const start = () => { clearInterval(iv); $("#tm").textContent = "0,0 dtk"; $("#rs").textContent = "Tekan “Mulai skrining”.";
+    mountPhone($("#ph"), { design: demoState.d, kartu: demoState.kartu || null,
+      onStart: t0 => { iv = setInterval(() => { if (!document.body.contains($("#tm"))) return clearInterval(iv); $("#tm").textContent = fmt((performance.now() - t0) / 1000, 1) + " dtk"; }, 100); },
+      onDone: r => { clearInterval(iv); $("#tm").textContent = fmt(r.waktu, 1) + " dtk"; $("#rs").textContent = `${r.terlewat} terlewat${r.salah != null ? `, ${r.salah} tidak sesuai kartu` : ""}, ${r.koreksi} koreksi${r.desain === "B" ? `, ${r.kembali}× kembali` : ""}.`; } }); };
+  start();
+  $("#dA").onclick = () => { demoState.d = "A"; desain(host); }; $("#dB").onclick = () => { demoState.d = "B"; desain(host); };
+  $("#kt").onchange = e => { demoState.kartu = e.target.value; desain(host); }; $("#ul").onclick = start;
+}
+function pengaturan() {
+  return `<h1>Pengaturan</h1><div class="card"><h3>Koneksi</h3><p>${cfg.preview ? "Sedang memakai <b>mode pratinjau</b>: data dibaca dari browser ini." : `Terhubung ke Apps Script:<br><span class="muted" style="word-break:break-all">${esc(cfg.url)}</span>`}</p><div class="row"><button class="ghost small" id="sw">${cfg.preview ? "Hubungkan ke Apps Script" : "Ganti URL atau kunci"}</button><button class="ghost small" id="lo">Keluar dari perangkat ini</button></div></div>
+${cfg.preview ? "" : `<div class="card"><h3>Link masuk cepat</h3><p class="muted">Link dasbor yang sudah berisi kunci. Buka sekali di perangkat baru (HP Anda, laptop anggota kelompok) dan dasbor langsung terbuka tanpa mengetik kunci.</p><p class="warn">Siapa pun yang memegang link ini bisa melihat semua data. Kirim hanya lewat chat pribadi, jangan di grup.</p><div class="copy"><input type="text" readonly id="ml" value="${esc(location.origin + location.pathname + "#kunci=" + encodeURIComponent(cfg.key || ""))}"><button class="small" data-copy="ml">Salin</button></div><p class="muted" id="cm"></p></div>`}
+<div class="card"><h3>Link peserta</h3><p class="muted">Isi setelah halaman peserta di-hosting (mis. GitHub Pages). Dipakai untuk tombol salin di Ringkasan.</p><div class="copy"><input type="url" id="lk" value="${esc(cfg.link || "")}" placeholder="${esc(new URL("index.html", location.href).href)}"><button class="small" id="sv">Simpan</button></div><p class="muted" id="sm"></p></div>
+${cfg.preview ? `<div class="card"><h3>Data pratinjau</h3><p class="muted">Hapus semua data uji coba yang tersimpan di browser ini.</p><button class="ghost small" id="rp">Kosongkan data pratinjau</button></div>` : ""}`;
+}
+function bindSet() {
+  bindCopy();
+  $("#sw").onclick = () => { cfg.preview = false; if (!cfg.url) cfg.url = BAKED; cfg.key = ""; saveCfg(); loaded = false; render(); };
+  $("#lo").onclick = () => { cfg = BAKED ? { url: BAKED, key: "", preview: false, link: cfg.link } : null; store.set("ss_owner", cfg ? JSON.stringify(cfg) : null); rows = []; loaded = false; render(); };
+  $("#sv").onclick = () => { const v = $("#lk").value.trim(); if (v && !/^https?:\/\//.test(v)) { $("#sm").textContent = "Link harus diawali https://"; return; } cfg.link = v; saveCfg(); $("#sm").textContent = "Tersimpan."; };
+  if ($("#rp")) $("#rp").onclick = () => { const sh = openSheet(`<h3>Kosongkan data pratinjau?</h3><p>Semua sesi uji coba di browser ini dihapus.</p><button id="yes">Kosongkan</button>`, { closeText: "Batal" }); $("#yes", sh.el).onclick = () => { store.set("ss_preview_db", null); sh.close(); load(); }; };
+}
+addEventListener("hashchange", () => { render(); scrollTo(0, 0); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && cfg && loaded) load(true); });
+render();
+if (cfg && (cfg.preview || (cfg.url && cfg.key))) load();
+timer = setInterval(() => { if (!document.hidden && cfg && (cfg.preview || cfg.url) && view() !== "desain") load(true); }, 30000);
+}
+
+</script>
+</body>
+</html>
