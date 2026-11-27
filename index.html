@@ -213,6 +213,8 @@ body.trial{overflow:hidden}
 .tb-l{display:flex;flex-direction:column;gap:1px}
 .tag{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#A9C7E0}
 .tbar b{font-size:15px}
+.tb-r{display:flex;gap:8px;flex:none}
+.tbar .tghost{background:transparent;color:#EEF2F5;border:1.5px solid #5B6B78}
 .tbar button{min-height:44px;padding:6px 16px;font-size:15px;border-radius:12px;background:#EEF2F5;color:#1E2A33;border-color:#EEF2F5}
 .hint{background:var(--warn);color:var(--warnink);font-size:14px;padding:8px 14px;text-align:center;flex:none}
 .hint.ok{background:#DDEDE6;color:#1F4D3A}
@@ -603,15 +605,22 @@ function task(n) {
 
 function trial(n, d) {
   document.body.classList.add("trial");
-  app.innerHTML = `<div class="tview"><div class="tbar"><div class="tb-l"><span class="tag">Uji desain · versi ${n} dari 2</span><b>Kamu berperan sebagai ${PERSONA[K(n)]}</b></div><button id="nx" hidden>Lanjut →</button></div>
+  app.innerHTML = `<div class="tview"><div class="tbar"><div class="tb-l"><span class="tag">Uji desain · versi ${n} dari 2</span><b>Kamu berperan sebagai ${PERSONA[K(n)]}</b></div><div class="tb-r"><button id="rs" class="tghost" aria-label="Ulangi dari awal">↺ Ulangi</button><button id="nx" hidden>Lanjut →</button></div></div>
 <div class="hint" id="hint">Tekan <b>Mulai skrining</b>, lalu salin jawaban dari kartu ${PERSONA[K(n)]}. Kalau ada yang terlanjur beda, tidak apa-apa.</div>
 <div class="tstage"><div class="phwrap" id="ph"></div><aside class="kpanel" aria-label="Kartu ${PERSONA[K(n)]}">${kartuHTML(K(n))}</aside></div></div>`;
   const kp = $(".kpanel");
   mountPhone($("#ph"), { design: d, kartu: String(K(n)), full: innerWidth < 900, persona: PERSONA[K(n)],
     onStart: () => { $("#hint").hidden = true; },
     onAnswer: ans => tickKartu(kp, ans),
-    onDone: r => { r.kartuDibuka = null; run.res[n] = r; save(); $("#nx").hidden = false; const h = $("#hint"); h.hidden = false; h.classList.add("ok"); h.innerHTML = `<b>Tercatat.</b> Hasil di layar milik ${PERSONA[K(n)]}, bukan kamu. Tekan <b>Lanjut</b>.`; } });
+    onDone: r => { r.kartuDibuka = null; r.ulang = (run.ulang && run.ulang[n]) || 0; run.res[n] = r; save(); $("#nx").hidden = false; const h = $("#hint"); h.hidden = false; h.classList.add("ok"); h.innerHTML = `<b>Tercatat.</b> Hasil di layar milik ${PERSONA[K(n)]}, bukan kamu. Tekan <b>Lanjut</b>.`; } });
   $("#nx").onclick = () => go("sus" + n);
+  $("#rs").onclick = () => {
+    const sh = openSheet(`<h3>Mulai ulang?</h3><p class="muted">Pilih ini jika kamu salah langkah, aplikasi macet, atau terganggu di tengah jalan. Tidak apa-apa, ini bukan kesalahanmu.</p>
+<button class="block" id="u1">Ulangi versi ${n} ini dari awal</button><p class="muted">Jawaban versi ${n} dihapus dan waktu dihitung ulang.</p>
+<button class="ghost block" id="u2">Mulai lagi dari latihan</button><p class="muted">Kedua versi diulang. Persetujuan dan data diri tidak perlu diisi lagi.</p>`, { closeText: "Batal, lanjutkan" });
+    $("#u1", sh.el).onclick = () => { sh.close(); run.ulang = run.ulang || {}; run.ulang[n] = (run.ulang[n] || 0) + 1; delete run.res[n]; run.step = "trial" + n; save(); trial(n, d); };
+    $("#u2", sh.el).onclick = () => { sh.close(); run.ulang = run.ulang || {}; run.ulang.semua = (run.ulang.semua || 0) + 1; run.res = {}; run.sus = { 1: Array(10).fill(0), 2: Array(10).fill(0) }; run.pref = ""; run.prefNyata = ""; delete run.rec; go("latihan"); };
+  };
 }
 
 function sus(n) {
@@ -647,7 +656,7 @@ function pref() {
 }
 
 function record() {
-  const ord = run.urutan.split("→"), rec = { kode: run.kode, latihan: !!run.latihan, urutan: run.urutan, demo: { ...run.demo }, preferensi: run.pref, preferensiNyata: run.prefNyata || "", urutanKartu: (run.kartu || [1, 2]).map(k => PERSONA[k]).join("→"), alasan: String(run.alasan || "").slice(0, 600), mulai: run.mulai, selesai: new Date().toISOString(), perangkat: { lebar: innerWidth, tinggi: innerHeight, sentuh: matchMedia("(pointer:coarse)").matches }, versi: 4 };
+  const ord = run.urutan.split("→"), rec = { kode: run.kode, latihan: !!run.latihan, urutan: run.urutan, demo: { ...run.demo }, preferensi: run.pref, preferensiNyata: run.prefNyata || "", ulangSemua: (run.ulang && run.ulang.semua) || 0, urutanKartu: (run.kartu || [1, 2]).map(k => PERSONA[k]).join("→"), alasan: String(run.alasan || "").slice(0, 600), mulai: run.mulai, selesai: new Date().toISOString(), perangkat: { lebar: innerWidth, tinggi: innerHeight, sentuh: matchMedia("(pointer:coarse)").matches }, versi: 4 };
   [1, 2].forEach(n => { const d = ord[n - 1]; rec[d] = { ...run.res[n], posisi: n, sus: [...run.sus[n]], susSkor: susScore(run.sus[n]) }; });
   return rec;
 }
