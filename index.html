@@ -545,7 +545,7 @@ function welcome() {
 ${wide ? `<p class="warn">Uji ini dirancang untuk HP. Jika bisa, buka link ini di HP agar hasilnya sesuai.</p>` : ""}
 ${prev && !resume && !LATIHAN ? `<p class="warn">Sepertinya kamu sudah pernah ikut dari perangkat ini (kode ${esc(prev)}). Terima kasih! Lanjutkan hanya jika perangkat ini dipakai orang lain.</p>` : ""}
 <div class="foot">${resume ? `<button class="block" id="res">Lanjutkan sesi kamu</button><button class="ghost block" id="new">Mulai dari awal</button>` : `<button class="block" id="go">Mulai</button>`}</div>`);
-  if ($("#go")) $("#go").onclick = () => { run = fresh(); go("consent"); };
+  if ($("#go")) $("#go").onclick = () => { run = run && run.kode ? Object.assign(fresh(), { kode: run.kode, urutan: run.urutan, kartu: run.kartu, ulang: run.ulang }) : fresh(); go("consent"); };
   if ($("#res")) $("#res").onclick = () => { if (run.step.startsWith("trial")) run.step = "task" + run.step.slice(-1); render(); };
   if ($("#new")) $("#new").onclick = () => { const k = run.kode, u = run.urutan; run = fresh(); run.kode = k; run.urutan = u; go("consent"); };
 }
@@ -617,8 +617,10 @@ function trial(n, d) {
   $("#rs").onclick = () => {
     const sh = openSheet(`<h3>Mulai ulang?</h3><p class="muted">Pilih ini jika kamu salah langkah, aplikasi macet, atau terganggu di tengah jalan. Tidak apa-apa, ini bukan kesalahanmu.</p>
 <button class="block" id="u1">Ulangi versi ${n} ini dari awal</button><p class="muted">Jawaban versi ${n} dihapus dan waktu dihitung ulang.</p>
-<button class="ghost block" id="u2">Mulai lagi dari latihan</button><p class="muted">Kedua versi diulang. Persetujuan dan data diri tidak perlu diisi lagi.</p>`, { closeText: "Batal, lanjutkan" });
+<button class="ghost block" id="u2">Mulai lagi dari latihan</button><p class="muted">Kedua versi diulang. Persetujuan dan data diri tidak perlu diisi lagi.</p>
+<button class="ghost block" id="u3">Mulai dari awal sekali</button><p class="muted">Kembali ke halaman pertama: penjelasan, persetujuan, dan data diri diisi ulang.</p>`, { closeText: "Batal, lanjutkan" });
     $("#u1", sh.el).onclick = () => { sh.close(); run.ulang = run.ulang || {}; run.ulang[n] = (run.ulang[n] || 0) + 1; delete run.res[n]; run.step = "trial" + n; save(); trial(n, d); };
+    $("#u3", sh.el).onclick = () => { sh.close(); const keep = { kode: run.kode, urutan: run.urutan, kartu: run.kartu, ulang: { ...(run.ulang || {}) } }; keep.ulang.awal = (keep.ulang.awal || 0) + 1; run = Object.assign(fresh(), keep); go("welcome"); };
     $("#u2", sh.el).onclick = () => { sh.close(); run.ulang = run.ulang || {}; run.ulang.semua = (run.ulang.semua || 0) + 1; run.res = {}; run.sus = { 1: Array(10).fill(0), 2: Array(10).fill(0) }; run.pref = ""; run.prefNyata = ""; delete run.rec; go("latihan"); };
   };
 }
@@ -656,7 +658,7 @@ function pref() {
 }
 
 function record() {
-  const ord = run.urutan.split("→"), rec = { kode: run.kode, latihan: !!run.latihan, urutan: run.urutan, demo: { ...run.demo }, preferensi: run.pref, preferensiNyata: run.prefNyata || "", ulangSemua: (run.ulang && run.ulang.semua) || 0, urutanKartu: (run.kartu || [1, 2]).map(k => PERSONA[k]).join("→"), alasan: String(run.alasan || "").slice(0, 600), mulai: run.mulai, selesai: new Date().toISOString(), perangkat: { lebar: innerWidth, tinggi: innerHeight, sentuh: matchMedia("(pointer:coarse)").matches }, versi: 4 };
+  const ord = run.urutan.split("→"), rec = { kode: run.kode, latihan: !!run.latihan, urutan: run.urutan, demo: { ...run.demo }, preferensi: run.pref, preferensiNyata: run.prefNyata || "", ulangSemua: (run.ulang && run.ulang.semua) || 0, ulangAwal: (run.ulang && run.ulang.awal) || 0, urutanKartu: (run.kartu || [1, 2]).map(k => PERSONA[k]).join("→"), alasan: String(run.alasan || "").slice(0, 600), mulai: run.mulai, selesai: new Date().toISOString(), perangkat: { lebar: innerWidth, tinggi: innerHeight, sentuh: matchMedia("(pointer:coarse)").matches }, versi: 4 };
   [1, 2].forEach(n => { const d = ord[n - 1]; rec[d] = { ...run.res[n], posisi: n, sus: [...run.sus[n]], susSkor: susScore(run.sus[n]) }; });
   return rec;
 }
