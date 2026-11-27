@@ -137,9 +137,13 @@ textarea{min-height:96px;resize:vertical}
 @media(prefers-reduced-motion:reduce){.prog i,.item,.opt{transition:none}.slide,.toast,.sheet{animation:none}}
 .pmodal{position:absolute;inset:0;background:rgba(31,42,46,.45);display:flex;align-items:flex-end;z-index:8;animation:fin .18s ease-out}
 .pmbox{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:20px 18px 24px;display:flex;flex-direction:column;gap:10px}
-.pmbox .pmt{font-size:19px;font-weight:700;color:#1F2A2E}
+.pmt{font-size:20px;font-weight:700;color:#1F2A2E;line-height:1.25}
 .back.bk{border:1.5px solid #B9D3CF;background:#F3F8F7;border-radius:999px;padding:4px 14px;min-height:38px;font-size:14px}
 .back.bk:disabled{opacity:.35;cursor:default}
+.crisis{display:flex;flex-direction:column;gap:12px;background:#FBEDEA;border:1.5px solid #E9B9AE;border-radius:18px;padding:18px}
+.anon.dang{background:#F6D9D3;color:#8A2E20}
+.phone.lg .pad{font-size:18px}.phone.lg .stem{font-size:16px}.phone.lg .opt{font-size:16px}.phone.lg .opt.big{font-size:19px}
+.phone.lg .item .qt{font-size:18px}.phone.lg .qcard{font-size:24px}.phone.lg .pbtn{font-size:18px}.phone.lg .lvl b{font-size:18px}
 
 .top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
 .top-in{max-width:1180px;margin:0 auto;padding:12px max(3vw,14px) 0;display:flex;flex-direction:column;gap:10px}
@@ -351,6 +355,8 @@ const DNAME = { A: "Desain A · satu halaman", B: "Desain B · per halaman" };
 const SUSQ = ["Saya rasa saya akan sering menggunakan fitur skrining ini.", "Saya merasa fitur skrining ini rumit tanpa perlu.", "Saya merasa fitur skrining ini mudah digunakan.", "Saya merasa butuh bantuan orang lain untuk bisa menggunakan fitur skrining ini.", "Saya merasa bagian-bagian fitur skrining ini menyatu dengan baik.", "Saya merasa ada terlalu banyak hal yang tidak konsisten di fitur skrining ini.", "Saya rasa kebanyakan orang akan cepat belajar menggunakan fitur skrining ini.", "Saya merasa fitur skrining ini merepotkan untuk digunakan.", "Saya merasa percaya diri saat menggunakan fitur skrining ini.", "Saya perlu mempelajari banyak hal sebelum bisa menggunakan fitur skrining ini."];
 const DEMO = [["usia", "Usia", ["≤ 18", "19–20", "21–22", "≥ 23"]], ["jk", "Jenis kelamin", ["Perempuan", "Laki-laki", "Tidak ingin menjawab"]], ["angkatan", "Angkatan", ["2022", "2023", "2024", "2025", "Lainnya"]], ["app", "Seberapa sering kamu memakai aplikasi kesehatan di HP?", ["Hampir setiap hari", "Beberapa kali sebulan", "Pernah, tapi jarang", "Tidak pernah"]], ["skrining", "Pernah mengisi skrining psikologis online?", ["Pernah", "Belum"]], ["hp", "Rata-rata memakai HP per hari", ["< 3 jam", "3–6 jam", "> 6 jam"]]];
 const DEPT = ["Teknik Biomedis", "Teknik Elektro", "Teknologi Informasi", "Teknik Sipil", "Teknik Lingkungan", "Teknik Mesin", "Teknik Industri", "Teknik Kimia", "Teknik Geologi", "Teknik Geodesi", "Arsitektur", "Perencanaan Wilayah dan Kota", "Teknik Fisika", "Teknik Nuklir"];
+/* Isi kontak resmi Layanan Psikologi FT jika sudah ada, mis. "WhatsApp 08xx-xxxx-xxxx (Senin–Jumat 08.00–15.00)". */
+const KONTAK_FT = { nama: "Layanan Psikologi FT UGM", info: "" };
 const susScore = a => a.every(v => v >= 1) ? 2.5 * a.reduce((s, v, i) => s + (i % 2 === 0 ? v - 1 : 5 - v), 0) : null;
 
 /* Kartu peran: jawaban tokoh fiksi yang disalin peserta. Baris yang sudah diisi di aplikasi diberi tanda ✓. */
@@ -411,7 +417,13 @@ function mountPhone(host, { design, kartu, full, persona, explore, onStart, onDo
   };
   const level = (s, phq) => s < 5 ? "Minimal" : s < 10 ? "Ringan" : s < 15 ? "Sedang" : phq && s < 20 ? "Sedang–berat" : "Berat";
   const lvl = (nama, s, max, phq) => `<div class="lvl"><div class="top"><span>${nama}</span><strong>${level(s, phq)}</strong></div><div class="meter" aria-hidden="true"><i style="width:${s / max * 100}%"></i></div><span class="stem">Skor ${s} dari ${max}</span></div>`;
-  const hasil = () => {
+  const krisis = () => scr(`<div class="crisis"><span class="anon dang">Butuh perhatian sekarang</span><p class="pmt">Kamu tidak sendiri</p><p>Salah satu jawaban menunjukkan pikiran untuk menyakiti diri. Itu berat, dan kamu berhak mendapat bantuan sekarang, tidak perlu menunggu.</p>
+<button class="pbtn danger" data-a="tel">Hubungi SEJIWA · 119 ekstensi 8</button><button class="pbtn alt" data-a="tel">Hubungi ${KONTAK_FT.nama}</button>
+<p class="stem">Jika dalam bahaya langsung, hubungi 112 atau datang ke IGD terdekat. Menghubungi bantuan bukan tanda lemah.</p></div>
+${persona ? `<p class="role">Layar ini muncul karena jawaban soal 16 di kartu ${esc(persona)}. Di aplikasi asli, layar ini selalu tampil sebelum hasil.</p>` : ""}
+<button class="pbtn alt" data-a="lihat-hasil">Lihat hasil skrining</button>`);
+  const hasil = (lewatKrisis) => {
+    if (!lewatKrisis && st.ans[15] != null && st.ans[15] > 0) return krisis();
     const v = st.ans.map(x => x ?? 0), g = v.slice(0, 7).reduce((a, b) => a + b, 0), p = v.slice(7).reduce((a, b) => a + b, 0), perlu = g >= 10 || p >= 10;
     ph.innerHTML = sbar + `<div class="screen"><div class="pad slide">${persona ? `<p class="role">Ini hasil milik ${esc(persona)}, tokoh di kartu. Bukan hasil kamu.</p>` : ""}<p class="stem">Hasil skrining · bukan diagnosis</p><h4>Kondisi saat ini</h4>
 ${lvl("Kecemasan", g, 21)}${lvl("Suasana hati", p, 27, true)}
@@ -435,7 +447,8 @@ ${v[15] > 0 ? `<div class="lvl" style="background:#F6E1DC"><b>Kamu tidak sendiri
 <div class="lvl"><b>Check-in mood hari ini</b>${ex.mood == null ? `<div class="mood" role="radiogroup" aria-label="Mood hari ini">${MOOD.map((m, i) => `<button data-mood="${i}" aria-label="${m}"><span class="face f${i}" aria-hidden="true"></span><small>${m}</small></button>`).join("")}</div><span class="stem">Cukup satu ketukan, kurang dari 1 menit.</span>` : `<p>Tercatat: <b>${MOOD[ex.mood]}</b>. Sampai jumpa besok.</p><button class="linkbtn2" data-a="nav-tren">Lihat tren mood →</button>`}</div>
 <div class="lvl"><div class="top"><b>Skrining terakhir</b><span class="stem">${last.tgl}</span></div><span>Kecemasan ${level(last.g)} · Suasana hati ${level(last.p, true)}</span><span class="stem">Skrining ulang disarankan setiap 2 minggu.</span></div>
 <button class="pbtn" data-a="nav-skrining">Mulai skrining baru</button>
-<div class="lvl"><div class="top"><b>Pengingat</b><button class="linkbtn2" data-a="nav-tren">Ubah</button></div><span class="stem">Check-in setiap hari pukul 20.00 · skrining setiap 2 minggu</span></div>`, "beranda");
+<div class="lvl"><div class="top"><b>Pengingat</b><button class="linkbtn2" data-a="nav-tren">Ubah</button></div><span class="stem">Check-in setiap hari pukul 20.00 · skrining setiap 2 minggu</span></div>
+<div class="lvl"><div class="top"><b>Privasi & data</b><button class="linkbtn2" data-a="privasi">Atur</button></div><span class="stem">Lihat data yang disimpan, ubah ukuran teks, atau hapus semua data.</span></div>`, "beranda");
   };
   const chart = () => {
     const W = 320, H = 120, xs = i => 14 + i * (W - 28) / 13, ys = v => H - 16 - v * (H - 32) / 4;
@@ -457,7 +470,13 @@ ${v[15] > 0 ? `<div class="lvl" style="background:#F6E1DC"><b>Kamu tidak sendiri
 <button class="pbtn" data-a="ajukan" ${ex.share ? "" : "disabled"}>Lanjut pilih jadwal</button><p class="stem" style="text-align:center">Kamu bisa membatalkan kapan saja.</p>`);
   const terkirim = () => scr(`<span class="anon">Pengajuan dikirim</span><h4>Tinggal pilih jadwal</h4><p>${ex.share === "ya" ? "Hasil skrining terakhirmu ikut dikirim ke konselor." : "Hasil skriningmu <b>tidak</b> dibagikan."} Konfirmasi jadwal akan dikirim lewat email UGM.</p><p class="stem">Prototipe: di aplikasi asli, langkah ini membuka pemilihan tanggal di sistem Layanan Psikologi FT.</p><button class="pbtn" data-a="nav-beranda">Kembali ke beranda</button>`);
   const darurat = () => scr(`<button class="back" data-a="nav-beranda">← Kembali</button><h4>Bantuan darurat</h4><p>Jika kamu atau temanmu dalam bahaya atau berpikir untuk menyakiti diri, segera hubungi bantuan.</p>
-<button class="pbtn danger" data-a="tel">SEJIWA · 119 ekstensi 8</button><button class="pbtn alt" data-a="tel">Layanan Psikologi FT UGM</button><p class="stem">Kamu tidak sendiri. Menghubungi bantuan bukan tanda lemah.</p>`);
+<button class="pbtn danger" data-a="tel">SEJIWA · 119 ekstensi 8</button><button class="pbtn alt" data-a="tel">${KONTAK_FT.nama}</button>${KONTAK_FT.info ? `<p class="stem">${esc(KONTAK_FT.info)}</p>` : ""}<p class="stem">Jika dalam bahaya langsung, hubungi 112 atau datang ke IGD terdekat. Kamu tidak sendiri, dan menghubungi bantuan bukan tanda lemah.</p>`);
+  const privasi = () => scr(`<button class="back" data-a="nav-beranda">← Kembali</button><h4>Privasi & data</h4>
+<div class="lvl"><b>Yang disimpan dengan kode SS-4821</b><ul class="tips"><li>Jawaban dan skor skrining</li><li>Check-in mood harian</li><li>Pengaturan pengingat</li></ul><span class="stem">Nama dan NIM tidak disimpan bersama data ini. Kampus dan konselor tidak bisa melihatnya kecuali kamu membagikannya saat mengajukan konseling.</span></div>
+<div class="lvl"><b>Berapa lama disimpan</b><span class="stem">Selama kamu memakai aplikasi. Data otomatis dihapus jika akun tidak dipakai selama 12 bulan.</span></div>
+<div class="lvl"><b>Ukuran teks</b><div class="chips2" role="radiogroup" aria-label="Ukuran teks"><button data-teks="n" class="${ph.classList.contains("lg") ? "" : "on"}">Normal</button><button data-teks="lg" class="${ph.classList.contains("lg") ? "on" : ""}">Besar</button></div></div>
+<button class="pbtn alt" data-a="unduh">Unduh data saya</button><button class="pbtn danger" data-a="hapus">Hapus semua data saya</button>`);
+  const hapusYakin = () => scr(`<h4>Hapus semua data?</h4><p>Semua riwayat skrining, check-in, dan tren dengan kode SS-4821 akan dihapus permanen dan tidak bisa dikembalikan.</p><p class="stem">Pengajuan konseling yang sudah terkirim ke Layanan Psikologi FT tidak ikut terhapus, karena tersimpan di sistem FT.</p><button class="pbtn danger" data-a="hapus-ya">Ya, hapus permanen</button><button class="pbtn alt" data-a="privasi">Batal</button>`);
   const finish = () => {
     st.t1 = performance.now();
     const k = kartu ? KARTU[kartu] : null, terlewat = st.ans.filter(v => v == null).length, salah = k ? st.ans.filter((v, i) => v != null && v !== k[i]).length : null;
@@ -467,6 +486,8 @@ ${v[15] > 0 ? `<div class="lvl" style="background:#F6E1DC"><b>Kamu tidak sendiri
   ph.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     const a = b.dataset.a;
+    if (a === "tel") return toast("Prototipe: membuka panggilan telepon.");
+    if (a === "lihat-hasil") return hasil(true);
     if (a === "tutup-kunci") { $$(".pmodal", ph).forEach(x => x.remove()); return; }
     if (!explore && (a === "sos" || a === "konseling" || a === "tren")) {
       const nama = { sos: "Bantuan darurat", konseling: "Ajukan konseling FT", tren: "Tren kondisi" }[a];
@@ -477,12 +498,16 @@ ${v[15] > 0 ? `<div class="lvl" style="background:#F6E1DC"><b>Kamu tidak sendiri
     }
     if (explore) {
       if (a === "sos") return darurat();
-      if (a === "tel") return toast("Prototipe: membuka panggilan telepon.");
       if (a === "konseling") return konseling();
       if (a === "ajukan") return terkirim();
       if (a === "sso") return terverif();
       if (a === "tren") { if (!ex.tersimpan) { const v = st.ans.map(x => x ?? 0); ex.riwayat.push({ tgl: "Hari ini", g: v.slice(0, 7).reduce((x, y) => x + y, 0), p: v.slice(7).reduce((x, y) => x + y, 0) }); ex.tersimpan = true; } return tren(); }
       if (a === "nav-beranda") return beranda();
+      if (a === "privasi") return privasi();
+      if (a === "unduh") return toast("Prototipe: data diunduh sebagai file.");
+      if (a === "hapus") return hapusYakin();
+      if (a === "hapus-ya") { Object.assign(ex, { mood: null, riwayat: [{ tgl: "—", g: 0, p: 0 }], share: null, tersimpan: false }); toast("Semua data dihapus."); return login(); }
+      if (b.dataset.teks) { ph.classList.toggle("lg", b.dataset.teks === "lg"); return privasi(); }
       if (a === "nav-tren") return tren();
       if (a === "nav-skrining") { Object.assign(st, { ans: Array(16).fill(null), i: 0, koreksi: 0, kembali: 0, peringatan: 0 }); ex.tersimpan = false; return intro(); }
       if (b.dataset.mood != null) { ex.mood = +b.dataset.mood; ex.moodHari = [...ex.moodHari.slice(1), ex.mood]; return beranda(); }
@@ -672,7 +697,7 @@ function statistik(main) {
 <p class="muted">SUS dan error: Wilcoxon (ordinal/cacah). Waktu: paired t-test bila Shapiro-Wilk selisih p &gt; 0,05, selain itu Wilcoxon. Cek ketahanan SUS dengan paired t-test: ${sus.t ? `t(${sus.t.df}) = ${fmt(sus.t.t, 2)}, p = ${fp(sus.t.p)}` : "–"}.</p></div>
 <div class="g2"><div class="card"><div class="fig"><svg id="gS" role="img" aria-label="Skor SUS per peserta"></svg></div><p class="muted">Satu garis = satu peserta. Garis marun = rata-rata.</p></div><div class="card"><div class="fig"><svg id="gW" role="img" aria-label="Waktu skrining per peserta"></svg></div><p class="muted">Garis turun dari A ke B = lebih cepat di B.</p></div></div>
 <div class="card"><h3>Cek efek urutan</h3><div class="scroll"><table class="t"><thead><tr><th></th><th>Percobaan 1</th><th>Percobaan 2</th><th>Selisih</th></tr></thead><tbody><tr><td>Waktu rata-rata (dtk)</td><td class="n">${fmt(S.mean(t1), 1)}</td><td class="n">${fmt(S.mean(t2), 1)}</td><td class="n">${fmt(S.mean(t1) - S.mean(t2), 1)}</td></tr><tr><td>SUS rata-rata</td><td class="n">${fmt(S.mean(s1), 1)}</td><td class="n">${fmt(S.mean(s2), 1)}</td><td class="n">${fmt(S.mean(s1) - S.mean(s2), 1)}</td></tr></tbody></table></div>
-<p>A→B: ${g1.length} orang · B→A: ${g2.length} orang. Mann-Whitney selisih waktu antar grup: ${mw ? `U = ${fmt(mw.U, 1)}, p = ${fp(mw.p)}` : "–"}. ${mw ? (mw.p > 0.05 ? "Tidak ada bukti efek urutan." : "Ada indikasi efek urutan, bahas di interpretasi.") : ""}</p></div>`;
+<p>A→B: ${g1.length} orang · B→A: ${g2.length} orang. Mann-Whitney selisih waktu antar grup: ${mw ? `U = ${fmt(mw.U, 1)}, p = ${fp(mw.p)}` : "–"}. ${mw ? (mw.p > 0.05 ? "Tidak ada bukti efek urutan." : "Ada indikasi efek urutan, bahas di interpretasi.") : ""}</p>${(() => { const k = { 1: [], 2: [] }; main.forEach(d => ["A", "B"].forEach(x => { const r = d[x]; if (r && isFinite(r.waktu) && k[r.kartu]) k[r.kartu].push(r.waktu); })); return `<p>Waktu rata-rata per kartu: ${PERSONA[1]} ${fmt(S.mean(k[1]), 1)} dtk (n = ${k[1].length}) · ${PERSONA[2]} ${fmt(S.mean(k[2]), 1)} dtk (n = ${k[2].length}). Urutan kartu diseimbangkan terhadap desain, jadi selisih antarkartu tidak menguntungkan A atau B.</p>`; })()}</div>`;
 }
 function slope(svg, a, title) {
   const draw = () => {
@@ -696,7 +721,7 @@ function peserta(main) {
   const als = main.filter(d => d.alasan && String(d.alasan).trim());
   const bar = (k, c) => `<div style="display:grid;grid-template-columns:minmax(0,9em) 1fr 3em;gap:10px;align-items:center"><span>${esc(k)}</span><div class="meter"><i style="width:${c / n * 100}%;background:var(--teal)"></i></div><span class="n" style="text-align:right">${c}</span></div>`;
   return `<h1>Peserta dan preferensi</h1>
-<div class="g2"><div class="card"><h3>Desain yang lebih disukai</h3>${bar("Satu halaman (A)", pref.A)}${bar("Per halaman (B)", pref.B)}${bar("Sama saja", pref["Sama saja"])}</div>
+<div class="g2"><div class="card"><h3>Desain yang lebih disukai</h3>${bar("Satu halaman (A)", pref.A)}${bar("Per halaman (B)", pref.B)}${bar("Sama saja", pref["Sama saja"])}${(() => { const q = { A: 0, B: 0, "Sama saja": 0 }; main.forEach(d => { if (q[d.preferensiNyata] != null) q[d.preferensiNyata]++; }); const t = q.A + q.B + q["Sama saja"]; return t ? `<h3 style="margin-top:10px">Jika dipakai untuk diri sendiri</h3>${bar("Satu halaman (A)", q.A)}${bar("Per halaman (B)", q.B)}${bar("Sama saja", q["Sama saja"])}` : ""; })()}</div>
 <div class="card"><h3>Perangkat</h3><p><b>${touch}</b> dari ${n} peserta memakai layar sentuh (HP/tablet).</p><p class="muted">Peserta yang memakai laptop bisa memperlambat waktu. Pertimbangkan di interpretasi.</p></div></div>
 <div class="card"><h3>Demografi (n = ${n})</h3><div class="scroll"><table class="t"><thead><tr><th>Variabel</th><th>Kategori</th><th>Jumlah</th><th>%</th></tr></thead><tbody>${DEMO.map(([k, l, o]) => o.map((x, i) => { const c = main.filter(d => (d.demo || {})[k] === x).length; return `<tr><td>${i ? "" : esc(l)}</td><td>${esc(x)}</td><td class="n">${c}</td><td class="n">${fmt(c / n * 100, 0)}%</td></tr>`; }).join("")).join("")}${Object.entries(dept).sort((a, b) => b[1] - a[1]).map(([k, c], i) => `<tr><td>${i ? "" : "Departemen"}</td><td>${esc(k)}</td><td class="n">${c}</td><td class="n">${fmt(c / n * 100, 0)}%</td></tr>`).join("")}</tbody></table></div></div>
 <div class="card"><h3>Alasan peserta</h3>${als.length ? als.map(d => `<p><b>${esc(d.kode)} · ${esc(d.preferensi)}:</b> ${esc(d.alasan)}</p>`).join("") : `<p class="muted">Belum ada alasan tertulis.</p>`}</div>`;
