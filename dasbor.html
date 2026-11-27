@@ -144,6 +144,26 @@ textarea{min-height:96px;resize:vertical}
 .anon.dang{background:#F6D9D3;color:#8A2E20}
 .phone.lg .pad{font-size:18px}.phone.lg .stem{font-size:16px}.phone.lg .opt{font-size:16px}.phone.lg .opt.big{font-size:19px}
 .phone.lg .item .qt{font-size:18px}.phone.lg .qcard{font-size:24px}.phone.lg .pbtn{font-size:18px}.phone.lg .lvl b{font-size:18px}
+/* ===== aksesibilitas: huruf minimum 12–14 px, area ketuk minimum 44 px ===== */
+.sos{font-size:14px;min-height:44px;padding:6px 14px}
+.anon{font-size:13px}
+.meta span{font-size:13px}
+.mood small{font-size:12px}
+.mood button{min-height:72px}
+.bnav button,.bnav span,.bnav b{font-size:13px;min-height:44px;display:inline-flex;align-items:center;padding:4px 14px}
+.kartu li .a{font-size:14px}
+.kartu .kmuted{font-size:14px}
+.hist div{font-size:14px}
+.share small{font-size:14px}
+.chips2 button{font-size:14px;min-height:44px;padding:8px 14px}
+.role{font-size:14px}
+.linkbtn2{min-height:44px;min-width:44px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center}
+.back,.back.bk{min-height:44px}
+.lvl .top{min-height:28px}
+.opts1{gap:8px}
+.opt.big{min-height:52px;padding:10px 16px}
+.pad.slide{padding-top:14px}
+.qcard{font-size:20px}
 
 .top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
 .top-in{max-width:1180px;margin:0 auto;padding:12px max(3vw,14px) 0;display:flex;flex-direction:column;gap:10px}
@@ -451,9 +471,9 @@ ${v[15] > 0 ? `<div class="lvl" style="background:#F6E1DC"><b>Kamu tidak sendiri
 <div class="lvl"><div class="top"><b>Privasi & data</b><button class="linkbtn2" data-a="privasi">Atur</button></div><span class="stem">Lihat data yang disimpan, ubah ukuran teks, atau hapus semua data.</span></div>`, "beranda");
   };
   const chart = () => {
-    const W = 320, H = 120, xs = i => 14 + i * (W - 28) / 13, ys = v => H - 16 - v * (H - 32) / 4;
+    const W = 320, H = 130, xs = i => 20 + i * (W - 34) / 13, ys = v => H - 16 - v * (H - 32) / 4;
     const pts = ex.moodHari.map((v, i) => `${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(" ");
-    return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafik mood 14 hari terakhir, cenderung membaik">${[0, 2, 4].map(v => `<line x1="10" x2="${W - 10}" y1="${ys(v)}" y2="${ys(v)}" stroke="#E1E6E4"/><text x="0" y="${ys(v) + 4}" font-size="9" fill="#5E6A6E">${v + 1}</text>`).join("")}<polyline points="${pts}" fill="none" stroke="#2F6F6B" stroke-width="2.5" stroke-linejoin="round"/>${ex.moodHari.map((v, i) => `<circle cx="${xs(i)}" cy="${ys(v)}" r="3" fill="#2F6F6B"/>`).join("")}</svg>`;
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafik mood 14 hari terakhir, cenderung membaik">${[0, 2, 4].map(v => `<line x1="16" x2="${W - 10}" y1="${ys(v)}" y2="${ys(v)}" stroke="#E1E6E4"/><text x="0" y="${ys(v) + 4}" font-size="12" fill="#5E6A6E">${v + 1}</text>`).join("")}<polyline points="${pts}" fill="none" stroke="#2F6F6B" stroke-width="2.5" stroke-linejoin="round"/>${ex.moodHari.map((v, i) => `<circle cx="${xs(i)}" cy="${ys(v)}" r="3" fill="#2F6F6B"/>`).join("")}</svg>`;
   };
   const tren = () => {
     const r = ex.riwayat, a = r[0], z = r[r.length - 1];
